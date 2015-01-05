@@ -74,11 +74,14 @@ Influenza\sep Vaccination\sep Immunity\sep Mutation
 
 %% main text
 \section{Introduction}
-Vaccination is one of the major medical advances in fighting various virus in recent centuries. Currently, influenza vaccination is a powerful tool in the global-health control arsenal, and allows for the mass prevention of infection.
-Various elements of mathematics are used throughout the vaccine development process. In this paper, we focus on the use of mathematics in influenza virus drift, understanding the impact of vaccination at the many-strain antigenic evolution. 
+Vaccination is one of the major medical advances in fighting various virus in recent centuries.
+Currently, influenza vaccination is a powerful tool in the global-health control arsenal, and allows for the mass prevention of infection.
+Various elements of mathematics are used throughout the vaccine development process.
+In this paper, we focus on the use of mathematics in influenza virus drift, understanding the impact of vaccination at the many-strain antigenic evolution. 
 
 \section{Model}
-Mathematically, based on the many-strain SIR epidemiological model (Gog and Grenfell 2002), which specifies the dynamics of large number of antigenic types with cross-immunity interaction, and introduced the general vaccination strategy composing infants (a proportion \(\phi_{new}\) of all children are assumed to be immunized) and the random vaccination of individuals in the population (at rate \(\phi_{pulse}\), although this vaccination will only affect those that are currently susceptible). We are able to developed a many-strain SIRV epidemiological model as the following:
+Mathematically, based on the many-strain SIR epidemiological model (Gog and Grenfell 2002), which specifies the dynamics of large number of antigenic types with cross-immunity interaction, and introduced the general vaccination strategy composing infants (a proportion \(\phi_{new}\) of all children are assumed to be immunized) and the random vaccination of individuals in the population (at rate \(\phi_{pulse}\), although this vaccination will only affect those that are currently susceptible).
+We are able to developed a many-strain SIRV epidemiological model as the following:
 
 \begin{align}
   \label{eq:S}
@@ -111,14 +114,18 @@ where the cross-immunity kernel \(\sigma(x,y)\) is an inverse form of the Monod 
 \begin{figure}
   \centering
   \includegraphics[width=6in,height=3in]{figures/Diagram}
-  \caption{Schematic diagram of the many-stain SIRV model. The solid straight arrows indicate the classic single-strain SIRV relationship. The double-line arrows indicate the cross-immunity relationship with nearby strains. The dashed double-arrows indicate the mutation to nearby strains. For simplification, both the birth and death rate \(\mu\) are ignored in this diagram.}
+  \caption{Schematic diagram of the many-stain SIRV model.
+  The solid straight arrows indicate the classic single-strain SIRV relationship.
+  The double-line arrows indicate the cross-immunity relationship with nearby strains.
+  The dashed double-arrows indicate the mutation to nearby strains. For simplification, both the birth and death rate \(\mu\) are ignored in this diagram.}
 \label{fig:Diagram}
 \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics[width=6in,height=3in]{figures/Proportion}
-  \caption{Proportion stacked graph indicated the building up process of steady traveling wave of influenza drift: initial single-strain-equilibrium-state is propagating into many-strain-equilibrium-state.}
+  \caption{Proportion stacked graph indicated the building up process of steady traveling wave of influenza drift.
+  Initial single-strain-equilibrium-state is propagating into many-strain-equilibrium-state.}
 \label{fig:Proportion}
 \end{figure}
 
@@ -128,7 +135,10 @@ where the cross-immunity kernel \(\sigma(x,y)\) is an inverse form of the Monod 
 \begin{figure}
   \centering
   \includegraphics[width=6in,height=4in]{figures/UnderVaccination}
-  \caption{Comparison of incidence rate between non-vaccination and under-vaccination. (a) is a stain evolutionary map without vaccination (vaccination rate \(\phi\) = 0), in which a single-strain-equilibrium-state is evolving into many-strain-equilibrium-state in a half century time frame. (b) is the strain evolutionary map with 20 years vaccination: at the beginning 30 years, a single-strain-equilibrium-state is approaching into many-strain-equilibrium-state, however, starting from the 30th year, an annual vaccination strategy (vaccination rate \(\phi\) = 0.039 ) is applied. After 20 years of vaccination pressure, the evolution is evolving and approaching into vaccination-equilibrium state.}
+  \caption{Comparison of incidence rate between non-vaccination and under-vaccination.
+  (a) is a stain evolutionary map without vaccination (vaccination rate \(\phi\) = 0), in which a single-strain-equilibrium-state is evolving into many-strain-equilibrium-state in a half century time frame. 
+  (b) is the strain evolutionary map with 20 years vaccination: at the beginning 30 years, a single-strain-equilibrium-state is approaching into many-strain-equilibrium-state, however, starting from the 30th year, an annual vaccination strategy (vaccination rate \(\phi\) = 0.039 ) is applied. 
+  After 20 years of vaccination pressure, the evolution is evolving and approaching into vaccination-equilibrium state.}
 \label{fig:UnderVaccination}
 \end{figure}
 
@@ -137,7 +147,9 @@ where the cross-immunity kernel \(\sigma(x,y)\) is an inverse form of the Monod 
 \begin{figure}
   \centering
   \includegraphics[width=6in,height=2.75in]{figures/Veffect}
-  \caption{Vaccination effects. (a) Total incidence rate per 10 years as a function of vaccination rate \(\phi\). (b) Speed as a function of vaccination rate \(\phi\). }
+  \caption{Vaccination effects.
+  (a) Total incidence rate per 10 years as a function of vaccination rate \(\phi\).
+  (b) Speed as a function of vaccination rate \(\phi\).}
   \label{fig:Veffect}
 \end{figure}
 
@@ -146,7 +158,9 @@ where the cross-immunity kernel \(\sigma(x,y)\) is an inverse form of the Monod 
 \begin{figure}
   \centering
   \includegraphics[width=6in,height=4in]{figures/NewbornS}
-  \caption{Contribution from two vaccination strategies. The triangle-marker red line is the strain evolutionary speed as a function of infant-vaccination-rate only, while the rectangle-marker blue line is the strain evolutionary speed as a function of susceptible-vaccination-rate only. The circle-marker green line is the composition of both vaccination strategy.}
+  \caption{Contribution from two vaccination strategies.
+  The triangle-marker red line is the strain evolutionary speed as a function of infant-vaccination-rate only, while the rectangle-marker blue line is the strain evolutionary speed as a function of susceptible-vaccination-rate only.
+  The circle-marker green line is the composition of both vaccination strategy.}
   \label{fig:NewbornS}
 \end{figure}
 
