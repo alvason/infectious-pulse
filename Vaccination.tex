@@ -12,10 +12,18 @@
 \usepackage{hyperref}
 
 \usepackage{graphicx}
-
-
+\usepackage{color} 
 
 %\usepackage{showframe}
+
+% comments
+\usepackage{ulem}
+\definecolor{purple}{rgb}{0.459,0.109,0.538}
+\def\tb#1#2{\sout{#1} \textcolor{purple}{#2}}
+\def\tbc#1{\textcolor{purple}{[#1]}}
+\definecolor{blue}{rgb}{0.324,0.609,0.708}
+\def\al#1#2{\sout{#1} \textcolor{blue}{#2}} 
+\def\alc#1{\textcolor{blue}{[#1]}} 
 
 \begin{document}
 
@@ -43,7 +51,7 @@
 %% \fntext[label3]{}
 
 %Title of paper
-\title{Vaccination Effect in a Many-strain Model of Influenza Drift}
+\title{Modeling the effects of vaccination on influenza transmission and evolution}
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{<author name>}
@@ -61,8 +69,16 @@
 
 
 \begin{abstract}
-%% Text of abstract
-By introducing the general vaccination strategy composing of new-born immunization(at rate \(\phi_{new}\)) and the vaccination of currently susceptible (at rate \(\phi_{pulse}\)) into the many-strain SIR epidemiological model (Gog and Grenfell 2002), a simple yet robust many-strain SIRV epidemiological model is developed for understanding the impact of vaccination at the many-strain antigenic evolution. 
+Influenza viruses continually evolve to escape the human population immune response.
+New antigenic variants have a transmission advantage over older strains and so spread to take over the influenza virus population.
+Previous work has sought to model the join epidemiological and evolutionary process in which competition between strains plays out.
+By assuming a linear strain space, many of the basic dynamics of influenza transmission and evolution can captured.
+These models show a pattern of limited standing antigenic diversity, but rapid strain turnover coincident with observed dynamics.
+Here, we extend previous models to incorporate the effects of vaccination on influenza transmission and evolution.
+We examine varying vaccination coverage, vaccine strain choice and vaccination age cohort.
+We find that increasing vaccination coverage results in decreased disease incidence and slower rates of antigenic evolution.
+Interestingly, we find that vaccinating with antigenically leading strains, not matched to circulating viruses, results in better overall protection.
+We also find that the same vaccine coverage applied to infants, before first influenza infection, rather than equally across the population, results in slower virus evolution and better overall protection.
 \end{abstract}
 
 \begin{keyword}
@@ -147,9 +163,13 @@ where the cross-immunity kernel \(\sigma(x,y)\) is an inverse form of the Monod 
 \begin{figure}
   \centering
   \includegraphics[width=6in,height=2.75in]{figures/Veffect}
-  \caption{Vaccination effects.
-  (a) Total incidence rate per 10 years as a function of vaccination rate \(\phi\).
-  (b) Speed as a function of vaccination rate \(\phi\).}
+  \caption{Effects of vaccination on disease incidence and speed of antigenic drift.
+  (a) Incidence or attack rate is measured as the average proportion of the population infected yearly.
+  \tbc{Change $y$-axis label to ``Attack rate (/year)'' and divide these numbers by 10. People are more used to seeing attack rate per year than attack rate per 10 years.}
+  (b) Antigenic drift rate is measured as the average difference between the mean antigenic phenotype at time \(t\) and the mean antigenic phenotype at time \(t+1\).
+  Vaccination rate \(\phi\) is measured in terms of the proportion of the population vaccinated yearly.
+  \tbc{Remove plot labels ``(Incidence and Vaccination)'' and ``(Speed and Vaccination)''. Can see this from the $y$-axes.}
+  }
   \label{fig:Veffect}
 \end{figure}
 
