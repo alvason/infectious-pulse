@@ -95,7 +95,7 @@ In continuous one dimensional virus-space \(x\):
   \label{eq:S}
   \frac{\partial S(x,t)}{\partial t} = \mu N - \mu S(x,t) - \beta S(x,t) \int_{y} I(y,t)\sigma(y,x) dy
  \nonumber\\
-  -(\phi_{1}\mu N + \phi_{2} S(x,t)) \omega(t-\tau,l) \int_{y} \sigma(y,k) dy
+  -(\phi_{1}\mu N + \phi_{2} S(x,t)) \delta(x-k)\omega(t-\tau) \int_{y} \sigma(y,k) dy
 \end{align}
 
 \begin{align}
@@ -105,18 +105,18 @@ In continuous one dimensional virus-space \(x\):
 
 \begin{align}
   \label{eq:V}
-  \frac{\partial V(x,t)}{\partial t} = (\phi_{1}\mu N + \phi_{2} S(x,t)) \delta(x-k)\omega(t-\tau,l)  - \mu V(x,t) - \nu V(x,t)
+  \frac{\partial V(x,t)}{\partial t} = (\phi_{1}\mu N + \phi_{2} S(x,t)) \delta(x-k)\omega(t-\tau)  - \mu V(x,t) - \nu V(x,t)
 \end{align}
 
 \begin{align}
   \label{eq:R}
   \frac{\partial R(x,t)}{\partial t} = \nu (I(x,t) + V(x,t)) - \mu R(x,t) - \beta S(x,t) I(x,t) 
    \nonumber\\
-   -(\phi_{1}\mu N + \phi_{2} S_i(x,t)) \delta(x-k)\omega(t-\tau,l)
+   -(\phi_{1}\mu N + \phi_{2} S_i(x,t)) \delta(x-k)\omega(t-\tau)
   \nonumber\\
   +\beta S(x,t)\int_{y} I(y,t)\sigma(x,y) dy
   \nonumber\\
-  +(\phi_{1}\mu N + \phi_{2} S_i(x,t)) \omega(t-\tau,l) \int_{y} \sigma(y,k) dy
+  +(\phi_{1}\mu N + \phi_{2} S_i(x,t)) \delta(x-k)\omega(t-\tau) \int_{y} \sigma(y,k) dy
 \end{align}
 
 Here, the cross-immunity kernel \(\sigma(y,x)\) is an inverse form of the Monod equation:
@@ -126,7 +126,7 @@ Here, the cross-immunity kernel \(\sigma(y,x)\) is an inverse form of the Monod 
 \end{equation}
 in which the parameter \(r\) is the immunity (susceptibility) distance related with the strain space for \(50\%\) effectiveness. 
 
-Importantly, the unit impulse function (Kronecker delta function) \(\delta(x-k)\) is designed for selecting the specific vaccine \(k\) based on the recommending rules (lagging, coincident, and leading), and the window function (boxcar function) \(\omega(t-\tau,l)\) is the time window for implementing vaccination (starting from time \(\tau\) with a window inner width \(l\)).
+Importantly, the unit impulse function (Kronecker delta function) \(\delta(x-k)\) is designed for selecting the specific vaccine \(k\) based on the recommending rules (lagging, coincident, and leading), and the window function (boxcar function) \(\omega(t-\tau)\) is the time window for implementing vaccination (starting from time \(\tau\).
 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -136,28 +136,28 @@ In discretized one dimensional space of \(n\)-virus, above partial differential 
   \label{eq:S}
   \frac{\partial S_i(t)}{\partial t} = \mu N - \mu S_i(t) - \beta S_i(t) \sum_{j=1}^{n} I_j(t)\sigma(j,i)
  \nonumber\\
-  -(\phi_{1}\mu N + \phi_{2} S_i(t)) \omega(t-\tau,l) \sum_{j=1}^{n} \sigma(j,k)
+  -(\phi_{1}\mu N + \phi_{2} S_i(t)) \delta(i-k)\omega(t-\tau) \sum_{j=1}^{n} \sigma(j,k)
 \end{align}
 
 \begin{align}
   \label{eq:I}
-  \frac{\partial I_i(t)}{\partial t} = \beta S_i(t) I_i(t) - \mu I_i(t) - \nu I_i(t) + m(S_{i-1}(t) - 2S_{i}(t) + S_{i+1}(t))
+  \frac{\partial I_i(t)}{\partial t} = \beta S_i(t) I_i(t) - \mu I_i(t) - \nu I_i(t) + m(I_{i-1}(t) - 2I_{i}(t) + I_{i+1}(t))
 \end{align}
 
 \begin{align}
   \label{eq:V}
-  \frac{\partial V_i(t)}{\partial t} = (\phi_{1}\mu N + \phi_{2} S_i(t)) \delta(i-k)\omega(t-\tau,l) - \mu V_i(t) - \nu V_i(t)
+  \frac{\partial V_i(t)}{\partial t} = (\phi_{1}\mu N + \phi_{2} S_i(t)) \delta(i-k)\omega(t-\tau) - \mu V_i(t) - \nu V_i(t)
 \end{align}
 
 \begin{align}
   \label{eq:R}
   \frac{\partial R_i(t)}{\partial t} = \nu (I_i(t) + V_i(t)) - \mu R_i(t) - \beta S_i(t) I_i(t) 
    \nonumber\\
-   -(\phi_{1}\mu N + \phi_{2} S_i(t)) \delta(i-k)\omega(t-\tau,l)
+   -(\phi_{1}\mu N + \phi_{2} S_i(t)) \delta(i-k)\omega(t-\tau)
    \nonumber\\
   +\beta S_i(t)\sum_{j=1}^{n} I_j(t)\sigma(j,i)
   \nonumber\\
-  +(\phi_{1}\mu N + \phi_{2} S_i(t)) \omega(t-\tau,l) \sum_{j=1}^{n} \sigma(j,k)
+  +(\phi_{1}\mu N + \phi_{2} S_i(t)) \delta(i-k)\omega(t-\tau) \sum_{j=1}^{n} \sigma(j,k)
 \end{align}
 
 Here, the cross-immunity kernel \(\sigma(j,i)\) is an inverse form of the Monod equation:
@@ -167,7 +167,7 @@ Here, the cross-immunity kernel \(\sigma(j,i)\) is an inverse form of the Monod 
 \end{equation}
 in which the parameter \(r\) is the immunity (susceptibility) distance related with the strain space for \(50\%\) effectiveness. 
 
-Importantly, the unit impulse function (Kronecker delta function) \(\delta(i-k)\) is designed for selecting the specific vaccine \(k\) based on the recommending rules (lagging, coincident, and leading), and the window function (boxcar function) \(\omega(t-\tau,l)\) is the time window for implementing vaccination (starting from time \(\tau\) with a window inner width \(l\)).
+Importantly, the unit impulse function (Kronecker delta function) \(\delta(i-k)\) is designed for selecting the specific vaccine \(k\) based on the recommending rules (lagging, coincident, and leading), and the window function (boxcar function) \(\omega(t-\tau)\) is the time window for implementing vaccination (starting from time \(\tau\).
 
 \begin{figure}
   \centering
