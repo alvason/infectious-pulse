@@ -146,7 +146,7 @@ In discretized one dimensional space of \(n\)-virus, above partial differential 
 
 \begin{align}
   \label{eq:I}
-  \frac{\partial I_i(t)}{\partial t} = \beta S_i(t) I_i(t) - \mu I_i(t) - \nu I_i(t) + m(I_{i-1}(t) - 2I_{i}(t) + I_{i+1}(t))
+  \frac{\partial I_i(t)}{\partial t} = \beta S_i(t) I_i(t) - \mu I_i(t) - \nu I_i(t) + m\frac{I_{i-1}(t) - 2I_{i}(t) + I_{i+1}(t)}{\Delta i^2}
 \end{align}
 
 \begin{align}
@@ -203,16 +203,16 @@ in which the unit impulse function (Kronecker delta function) \(\delta(i-k)\) is
 
 \begin{figure}
   \centering
-  \includegraphics[width=6in,height=3in]{figures/SpeedRM}
-  \caption{Relationship between basic reproductive number \(R_0\) and mutation rate \(m\)}
-  \label{fig:SpeedRM}
+  \includegraphics[width=6in,height=2in]{figures/SpeedRMC}
+  \caption{Drift speed as a function of basic reproductive number \(R_0\), mutation rate \(m\), or cross-immunity distance \(r\).}
+  \label{fig:SpeedRMC}
 \end{figure}
 
 For linearize Equation{eq:I} by setting \(S = 1\):
 
 \begin{figure}
   \centering
-  \includegraphics[width=6in,height=3in]{figures/SpeedRlinear}
+  \includegraphics[width=4in,height=3in]{figures/SpeedRlinear}
   \caption{Drift speed as a function of basic reproductive number \(R_0\). The blue-triangle points give the numerical results, while red-circle points provide the suggestions of the linear conjecture.}
   \label{fig:SpeedRlinear}
 \end{figure}
