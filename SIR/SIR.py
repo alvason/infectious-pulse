@@ -98,7 +98,7 @@ plt.show()
 
 # <codecell>
 
-# simple numerical predictive algorithm
+# simple numerical scheme
 for tn in range(totalGPoint_T - 1):
     gridS[tn + 1] = gridS[tn] + dt*(-infecRate*gridS[tn]*gridI[tn] + inOutRate*(totalSIR - gridS[tn]));
     gridI[tn + 1] = gridI[tn] + dt*(+infecRate*gridS[tn]*gridI[tn] - recovRate*gridI[tn] - inOutRate*gridI[tn]);
@@ -109,11 +109,11 @@ plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridT, gridS, label = r'$ S(t) $')
 plt.plot(gridT, gridR, label = r'$ R(t) $')
 plt.plot(gridT, gridI, label = r'$ I(t) $')
-plt.plot(gridT, infecRate*gridS*gridI/365, label = r'$ \beta S(t)I(t)/365 $', linestyle = 'dotted', color = 'red')
+plt.plot(gridT, infecRate*gridS*gridI, label = r'$ \beta S(t)I(t) $', linestyle = 'dotted', color = 'red')
 plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
 plt.grid(True)
-plt.title(r'$ SIR \ model (R_0 = %f, \gamma = %f, \beta = %f) $'%(reprodNum, recovRate, infecRate), fontsize = AlvaFontSize);
-plt.xlabel(r'$t \ (year)$', fontsize = AlvaFontSize);
+plt.title(r'$ SIR \ model \ (R_0 = %f,\ \gamma = %f,\ \beta = %f) $'%(reprodNum, recovRate, infecRate), fontsize = AlvaFontSize);
+plt.xlabel(r'$time \ (day)$', fontsize = AlvaFontSize);
 plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
 plt.legend(loc = (1,0))
 plt.show()
