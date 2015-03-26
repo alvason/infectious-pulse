@@ -3,3 +3,4 @@
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir/figure/sir.png)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir/figure/revivalSIR.png)
 ### many-strain SIR model
+### many-strain SIRV model
