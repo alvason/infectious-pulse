@@ -44,17 +44,21 @@ plt.title(r'$ the \ 4th-order \ Runge-Kutta \ algorithm (interpolating \ polynom
 plt.text(0, 5.0/6, r'$ \frac{\partial y_n}{\partial x_n} = f(y_n,x_n) $', fontsize = 1.2*AlvaFontSize)
 
 plt.text(0, 4.0/6, r'$ y_{n+1} = \
-         y_n + (\frac{\Delta y_1}{6} + \frac{\Delta y_2}{3} + \frac{\Delta y_3}{3} +\frac{\Delta y_4}{6})  $', fontsize = 1.2*AlvaFontSize)
+         y_n + (\frac{\Delta y_1}{6} + \frac{\Delta y_2}{3} + \frac{\Delta y_3}{3} +\frac{\Delta y_4}{6})  $'
+         , fontsize = 1.2*AlvaFontSize)
 plt.text(0, 3.0/6, r'$ \Delta y_1 = \Delta x * f(y_n,\ x_n) $', fontsize = 1.2*AlvaFontSize)
-plt.text(0, 2.0/6, r'$ \Delta y_2 = \Delta x * f(y_n + \frac{\Delta y_1}{2},\ x_n + \frac{\Delta x}{2}) $', fontsize = 1.2*AlvaFontSize)
-plt.text(0, 1.0/6, r'$ \Delta y_3= \Delta x * f(y_n + \frac{\Delta y_2}{2},\ x_n + \frac{\Delta x}{2}) $', fontsize = 1.2*AlvaFontSize)
-plt.text(0, 0.0/6, r'$ \Delta y_4 = \Delta x * f(y_n + \Delta y_3,\ x_n + \Delta x) $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 2.0/6, r'$ \Delta y_2 = \Delta x * f(y_n + \Delta y_1 \frac{\Delta x}{2},\ x_n + \frac{\Delta x}{2}) $'
+         , fontsize = 1.2*AlvaFontSize)
+plt.text(0, 1.0/6, r'$ \Delta y_3= \Delta x * f(y_n + \Delta y_2 \frac{\Delta x}{2},\ x_n + \frac{\Delta x}{2}) $'
+         , fontsize = 1.2*AlvaFontSize)
+plt.text(0, 0.0/6, r'$ \Delta y_4 = \Delta x * f(y_n + \Delta y_3 \Delta x,\ x_n + \Delta x) $'
+         , fontsize = 1.2*AlvaFontSize)
 plt.show()
 
 def RungeKutta4(gridY, gridX, dYdx, dx, xn):
-    dy1 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy1; gridX[xn] = gridX[xn] + dx/2;
-    dy2 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy2; gridX[xn] = gridX[xn] + dx/2;
-    dy3 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy3; gridX[xn] = gridX[xn] + dx;
+    dy1 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy1*dx/2; gridX[xn] = gridX[xn] + dx/2;
+    dy2 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy2*dx/2; gridX[xn] = gridX[xn] + dx/2;
+    dy3 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy3*dx/2; gridX[xn] = gridX[xn] + dx;
     dy4 = dx*dYdx[xn];
     gridY[xn + 1] = gridY[xn] + (dy1/6 + dy2/3 + dy3/3 + dy4/6)
     return gridY[xn + 1];
@@ -63,30 +67,38 @@ def RungeKutta4(gridY, gridX, dYdx, dx, xn):
 # <codecell>
 
 # Effectiveness of the algorithm
-minX = float(0); maxX = float(0.99);
-totalGPoint_X = int(10**4);
+minX = float(-0.99); maxX = float(0.99);
+totalGPoint_X = int(10**2);
 gridX = np.linspace(minX, maxX, totalGPoint_X);
 dx = (maxX - minX)/totalGPoint_X;
 
-gridY = np.zeros(totalGPoint_X)
-gridY[0] = float(1) #(1 - gridX[0]**2)**(1.0/2)
+# Analytic
+gridY_A = np.zeros(totalGPoint_X)
+for xn in range(totalGPoint_X - 1):
+    gridY_A[xn] = np.sqrt((1 - gridX[xn]**2))
 
+# Euler method  
+dYdx = -gridX/(1 - gridX**2)**(1.0/2)
+gridY_E = np.zeros(totalGPoint_X)
+gridY_E[0] = gridY_A[0]
+for xn in range(totalGPoint_X - 1):
+    gridY_E[xn + 1] = gridY_E[xn] + dx*dYdx[xn]
+
+# RungeKutta
+gridY = np.zeros(totalGPoint_X)
+gridY[0] = gridY_A[0]
 for xn in range(totalGPoint_X - 1):
     dYdx = -gridX/(1 - gridX**2)**(1.0/2)
     RungeKutta4(gridY, gridX, dYdx, dx, xn)
 
-gridX = np.linspace(minX, maxX, totalGPoint_X);
-gridY_A = np.zeros(totalGPoint_X)
-for xn in range(totalGPoint_X - 1):
-    gridY_A[xn] = (1 - gridX[xn]**2)**(1.0/2)
-
-    
+gridX = np.linspace(minX, maxX, totalGPoint_X);    
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (9, 9))
+plt.figure(numberingFig, figsize = (12, 6))
 plt.plot(gridX, gridY_A, label = r'$ Analytic $')
-plt.plot(gridX, gridY, label = r'$ Numerical $')
+plt.plot(gridX, gridY_E, label = r'$ Euler $')
+plt.plot(gridX, gridY, label = r'$ RungeKutta $')
 plt.grid(True)
-plt.title(r'$ Runge-Kutta \ (dx = %f) $'%(dx), fontsize = AlvaFontSize);
+plt.title(r'$ Effectiveness \ of \ Runge-Kutta \ (total \ steps = %i) $'%(totalGPoint_X), fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y $', fontsize = AlvaFontSize);
 plt.legend(loc = (1,0))
@@ -108,7 +120,7 @@ recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
 infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
 
 # initial condition
-minT = float(0); maxT = float(1*year)/12;
+minT = float(0); maxT = float(1*year);
 totalGPoint_T = int(10**4);
 gridT = np.linspace(minT, maxT, totalGPoint_T);
 dt = (maxT - minT)/totalGPoint_T;
@@ -135,10 +147,10 @@ plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridT, gridS, label = r'$ S(t) $')
 plt.plot(gridT, gridR, label = r'$ R(t) $')
 plt.plot(gridT, gridI, label = r'$ I(t) $')
-plt.plot(gridT, infecRate*gridS*gridI, label = r'$ \beta S(t)I(t) $', linestyle = 'dotted', color = 'red')
+plt.plot(gridT, infecRate*gridS*gridI*day, label = r'$ \beta \ S(t)I(t) $', linestyle = 'dotted', color = 'red')
 plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
 plt.grid(True)
-plt.title(r'$ SIR \ model \ (R_0 = %f,\ \gamma = %f,\ \beta = %f) $'%(reprodNum, recovRate, infecRate), fontsize = AlvaFontSize)
+plt.title(r'$ Prevalence \ and \ incidence \ of \ SIR \ (R_0 = %f,\ \gamma = %f,\ \beta = %f) $'%(reprodNum, recovRate, infecRate), fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
 plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
 plt.legend(loc = (1,0))
@@ -160,7 +172,7 @@ recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
 infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
 
 # initial condition
-minT = float(0); maxT = float(30*year);
+minT = float(0); maxT = float(100*year);
 totalGPoint_T = int(10**4);
 gridT = np.linspace(minT, maxT, totalGPoint_T);
 dt = (maxT - minT)/totalGPoint_T;
@@ -190,7 +202,7 @@ plt.plot(gridT, gridI, label = r'$ I(t) $')
 plt.plot(gridT, infecRate*gridS*gridI*day, label = r'$ \beta S(t)I(t) $', linestyle = 'dotted', color = 'red')
 plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
 plt.grid(True)
-plt.title(r'$ SIR \ model \ (R_0 = %f,\ \gamma = %f,\ \beta = %f) $'%(reprodNum, recovRate, infecRate), fontsize = AlvaFontSize);
+plt.title(r'$ Revival \ of \ SIR \ (R_0 = %f,\ \gamma = %f,\ \beta = %f) $'%(reprodNum, recovRate, infecRate), fontsize = AlvaFontSize);
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
 plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
 plt.legend(loc = (1,0))
