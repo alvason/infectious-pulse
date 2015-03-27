@@ -36,69 +36,93 @@ plt.show()
 
 # <codecell>
 
-# Runge-Kutta numerical method 
+# Runge-Kutta numerical algorithm 
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize=(12, 6))
 plt.axis('off')
 plt.title(r'$ the \ 4th-order \ Runge-Kutta \ algorithm (interpolating \ polynomial) $', fontsize = AlvaFontSize)
-plt.text(0, 5.0/6, r'$ \frac{\partial y_n}{\partial x_n} = f(y_n,x_n) $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 5.0/6, r'$ \frac{\partial y}{\partial x} = f(y,x) $', fontsize = 1.2*AlvaFontSize)
 
 plt.text(0, 4.0/6, r'$ y_{n+1} = \
-         y_n + (\frac{\Delta y_1}{6} + \frac{\Delta y_2}{3} + \frac{\Delta y_3}{3} +\frac{\Delta y_4}{6})  $'
-         , fontsize = 1.2*AlvaFontSize)
-plt.text(0, 3.0/6, r'$ \Delta y_1 = \Delta x * f(y_n,\ x_n) $', fontsize = 1.2*AlvaFontSize)
-plt.text(0, 2.0/6, r'$ \Delta y_2 = \Delta x * f(y_n + \Delta y_1 \frac{\Delta x}{2},\ x_n + \frac{\Delta x}{2}) $'
-         , fontsize = 1.2*AlvaFontSize)
-plt.text(0, 1.0/6, r'$ \Delta y_3= \Delta x * f(y_n + \Delta y_2 \frac{\Delta x}{2},\ x_n + \frac{\Delta x}{2}) $'
-         , fontsize = 1.2*AlvaFontSize)
-plt.text(0, 0.0/6, r'$ \Delta y_4 = \Delta x * f(y_n + \Delta y_3 \Delta x,\ x_n + \Delta x) $'
-         , fontsize = 1.2*AlvaFontSize)
+         y_n + \Delta x(\frac{ f_1}{6} + \frac{f_2}{3} + \frac{f_3}{3} +\frac{f_4}{6})  $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 3.0/6, r'$ f_1 = f(y_n,\ x_n) $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 2.0/6, r'$ f_2 = f(y_n + f_1 \frac{\Delta x}{2},\ x_n + \frac{\Delta x}{2}) $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 1.0/6, r'$ f_3= f(y_n + f_2 \frac{\Delta x}{2},\ x_n + \frac{\Delta x}{2}) $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 0.0/6, r'$ f_4 = f(y_n + f_3 \Delta x,\ x_n + \Delta x) $', fontsize = 1.2*AlvaFontSize)
 plt.show()
 
 def RungeKutta4(gridY, gridX, dYdx, dx, xn):
-    dy1 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy1*dx/2; gridX[xn] = gridX[xn] + dx/2;
-    dy2 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy2*dx/2; gridX[xn] = gridX[xn] + dx/2;
-    dy3 = dx*dYdx[xn]; gridY[xn] = gridY[xn] + dy3*dx/2; gridX[xn] = gridX[xn] + dx;
-    dy4 = dx*dYdx[xn];
-    gridY[xn + 1] = gridY[xn] + (dy1/6 + dy2/3 + dy3/3 + dy4/6)
-    return gridY[xn + 1];
+    yyy = gridY[xn]; 
+    xxx = gridX[xn]; # keep initial value
+    dydx1 = dYdx[xn]; print dYdx[xn]
+    gridY[xn] = yyy + dydx1*dx/2; 
+    gridX[xn] = xxx + dx/2;
+    dydx2 = dYdx[xn]; print dYdx[xn]
+    gridY[xn] = yyy + dydx2*dx/2; 
+    gridX[xn] = xxx + dx/2;
+    dydx3 = dYdx[xn]; print dYdx[xn]
+    gridY[xn] = yyy + dydx3*dx; 
+    gridX[xn] = xxx + dx;
+    dydx4 = dYdx[xn]; print dYdx[xn]
+    gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
+    gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
+    return (gridY[xn + 1]);
 
 
 # <codecell>
 
 # Effectiveness of the algorithm
-minX = float(-0.99); maxX = float(0.99);
-totalGPoint_X = int(10**2);
+def Y_function(x):
+    Y = (1.0 - x**2)**(1.0/2) # circle
+    Y1 = x*np.sin(x)
+    return (Y + Y1)
+
+def Y_derivative(y, x):
+    dY_dx = -x/(1.0 - x**2)**(1.0/2)
+    dY_dx1 = np.sin(x) + x*np.cos(x)
+    return (dY_dx + dY_dx1)
+
+# numerical griding
+totalGPoint_X = int(10**1);
+minX = float(-0.99); maxX = float(0.9);
 gridX = np.linspace(minX, maxX, totalGPoint_X);
 dx = (maxX - minX)/totalGPoint_X;
 
-# Analytic
+# Analytic solution
 gridY_A = np.zeros(totalGPoint_X)
 for xn in range(totalGPoint_X - 1):
-    gridY_A[xn] = np.sqrt((1 - gridX[xn]**2))
+    gridY_A[xn] = Y_function(gridX)[xn]
 
-# Euler method  
-dYdx = -gridX/(1 - gridX**2)**(1.0/2)
+# Euler solution  
 gridY_E = np.zeros(totalGPoint_X)
+dYdx = Y_derivative(gridY_E, gridX)
 gridY_E[0] = gridY_A[0]
 for xn in range(totalGPoint_X - 1):
     gridY_E[xn + 1] = gridY_E[xn] + dx*dYdx[xn]
 
-# RungeKutta
+# RungeKutta solution
 gridY = np.zeros(totalGPoint_X)
-gridY[0] = gridY_A[0]
+dYdx = Y_derivative(gridY, gridX)
+gridY[0] = gridY_A[0];
 for xn in range(totalGPoint_X - 1):
-    dYdx = -gridX/(1 - gridX**2)**(1.0/2)
     RungeKutta4(gridY, gridX, dYdx, dx, xn)
-
+    
+    
+rangeA = totalGPoint_X/1 - 60;
+rangeB = totalGPoint_X/1 - 30;
 gridX = np.linspace(minX, maxX, totalGPoint_X);    
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = (12, 6))
+#plt.plot(gridX[rangeA:rangeB], gridY_A[rangeA:rangeB], label = r'$ Analytic $')
+#plt.plot(gridX[rangeA:rangeB], gridY_E[rangeA:rangeB], label = r'$ Euler $')
+#plt.plot(gridX[rangeA:rangeB], gridY[rangeA:rangeB], label = r'$ RungeKutta $')
+
 plt.plot(gridX, gridY_A, label = r'$ Analytic $')
-plt.plot(gridX, gridY_E, label = r'$ Euler $')
-plt.plot(gridX, gridY, label = r'$ RungeKutta $')
+plt.plot(gridX, gridY_E, label = r'$ Euler $', marker = '^')
+plt.plot(gridX, gridY, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Effectiveness \ of \ Runge-Kutta \ (total \ steps = %i) $'%(totalGPoint_X), fontsize = AlvaFontSize);
+plt.title(r'$ Effectiveness \ of \ Runge-Kutta \ (total \ steps = %i) $'%(totalGPoint_X)
+          , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y $', fontsize = AlvaFontSize);
 plt.legend(loc = (1,0))
