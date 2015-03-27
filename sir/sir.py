@@ -51,19 +51,13 @@ plt.text(0, 1.0/6, r'$ f_3= f(y_n + f_2 \frac{\Delta x}{2},\ x_n + \frac{\Delta 
 plt.text(0, 0.0/6, r'$ f_4 = f(y_n + f_3 \Delta x,\ x_n + \Delta x) $', fontsize = 1.2*AlvaFontSize)
 plt.show()
 
-def RungeKutta4(gridY, gridX, dYdx, dx, xn):
-    yyy = gridY[xn]; 
-    xxx = gridX[xn]; # keep initial value
-    dydx1 = dYdx[xn]; print dYdx[xn]
-    gridY[xn] = yyy + dydx1*dx/2; 
-    gridX[xn] = xxx + dx/2;
-    dydx2 = dYdx[xn]; print dYdx[xn]
-    gridY[xn] = yyy + dydx2*dx/2; 
-    gridX[xn] = xxx + dx/2;
-    dydx3 = dYdx[xn]; print dYdx[xn]
-    gridY[xn] = yyy + dydx3*dx; 
-    gridX[xn] = xxx + dx;
-    dydx4 = dYdx[xn]; print dYdx[xn]
+
+def AlvaRungeKutta4(dYdx, gridY, gridX, dx, xn):
+    yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
+    dydx1 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
+    dydx2 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+    dydx3 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
+    dydx4 = dYdx(gridY[xn], gridX[xn]); 
     gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
     gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
     return (gridY[xn + 1]);
@@ -74,49 +68,38 @@ def RungeKutta4(gridY, gridX, dYdx, dx, xn):
 # Effectiveness of the algorithm
 def Y_function(x):
     Y = (1.0 - x**2)**(1.0/2) # circle
-    Y1 = x*np.sin(x)
-    return (Y + Y1)
+    return Y
 
-def Y_derivative(y, x):
+def dYdx(y, x):
     dY_dx = -x/(1.0 - x**2)**(1.0/2)
-    dY_dx1 = np.sin(x) + x*np.cos(x)
-    return (dY_dx + dY_dx1)
+    return dY_dx
 
 # numerical griding
-totalGPoint_X = int(10**1);
-minX = float(-0.99); maxX = float(0.9);
+totalGPoint_X = int(18**1 + 1);
+minX = float(-0.9); maxX = float(0.9);
 gridX = np.linspace(minX, maxX, totalGPoint_X);
 dx = (maxX - minX)/totalGPoint_X;
 
 # Analytic solution
 gridY_A = np.zeros(totalGPoint_X)
-for xn in range(totalGPoint_X - 1):
-    gridY_A[xn] = Y_function(gridX)[xn]
+for xn in range(totalGPoint_X):
+    gridY_A[xn] = Y_function(gridX[xn])
 
 # Euler solution  
 gridY_E = np.zeros(totalGPoint_X)
-dYdx = Y_derivative(gridY_E, gridX)
 gridY_E[0] = gridY_A[0]
 for xn in range(totalGPoint_X - 1):
-    gridY_E[xn + 1] = gridY_E[xn] + dx*dYdx[xn]
+    gridY_E[xn + 1] = gridY_E[xn] + dx*dYdx(gridY_E[xn], gridX[xn])
 
 # RungeKutta solution
 gridY = np.zeros(totalGPoint_X)
-dYdx = Y_derivative(gridY, gridX)
 gridY[0] = gridY_A[0];
 for xn in range(totalGPoint_X - 1):
-    RungeKutta4(gridY, gridX, dYdx, dx, xn)
-    
-    
-rangeA = totalGPoint_X/1 - 60;
-rangeB = totalGPoint_X/1 - 30;
-gridX = np.linspace(minX, maxX, totalGPoint_X);    
+    AlvaRungeKutta4(dYdx, gridY, gridX, dx, xn)
+   
+gridX = np.linspace(minX, maxX, totalGPoint_X);      
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = (12, 6))
-#plt.plot(gridX[rangeA:rangeB], gridY_A[rangeA:rangeB], label = r'$ Analytic $')
-#plt.plot(gridX[rangeA:rangeB], gridY_E[rangeA:rangeB], label = r'$ Euler $')
-#plt.plot(gridX[rangeA:rangeB], gridY[rangeA:rangeB], label = r'$ RungeKutta $')
-
 plt.plot(gridX, gridY_A, label = r'$ Analytic $')
 plt.plot(gridX, gridY_E, label = r'$ Euler $', marker = '^')
 plt.plot(gridX, gridY, label = r'$ RungeKutta $', marker = 'o')
@@ -129,6 +112,16 @@ plt.legend(loc = (1,0))
 plt.show()
 
 # <codecell>
+
+def AlvaRungeKutta4YZ(dYdx, gridZ, gridY, gridX, dx, xn):
+    zzz = gridZ[xn] ; yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
+    dydx1 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
+    dydx2 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+    dydx3 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
+    dydx4 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); 
+    gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
+    gridZ[xn] = zzz; gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
+    return (gridY[xn + 1]);
 
 # setting parameter
 timeUnit = 'day'
@@ -157,14 +150,21 @@ gridI[0] = float(1)/10**6;
 gridR[0] = float(0);
 gridS[0] = totalSIR - gridI[0] - gridR[0];
 
+def dSdt(I, S, t):
+    dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S;
+    return dS_dt
+def dIdt(S, I, t):    
+    dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I;
+    return dI_dt
+def dRdt(I, R, t):
+    dR_dt = +recovRate*I - inOutRate*R;
+    return dR_dt
+
 # Runge Kutta numerical scheme
 for tn in range(totalGPoint_T - 1):
-    dSdt = -infecRate*gridS*gridI + inOutRate*totalSIR - inOutRate*gridS;
-    dIdt = +infecRate*gridS*gridI - recovRate*gridI - inOutRate*gridI;
-    dRdt = +recovRate*gridI - inOutRate*gridR;
-    RungeKutta4(gridS, gridT, dSdt, dt, tn);
-    RungeKutta4(gridI, gridT, dIdt, dt, tn);
-    RungeKutta4(gridR, gridT, dRdt, dt, tn);   
+    AlvaRungeKutta4YZ(dSdt, gridI, gridS, gridT, dt, tn);
+    AlvaRungeKutta4YZ(dIdt, gridS, gridI, gridT, dt, tn);
+    AlvaRungeKutta4YZ(dRdt, gridI, gridR, gridT, dt, tn);   
     
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = AlvaFigSize)
@@ -196,8 +196,8 @@ recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
 infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
 
 # initial condition
-minT = float(0); maxT = float(100*year);
-totalGPoint_T = int(10**4);
+minT = float(0); maxT = float(60*year);
+totalGPoint_T = int(20**4);
 gridT = np.linspace(minT, maxT, totalGPoint_T);
 dt = (maxT - minT)/totalGPoint_T;
 
@@ -209,14 +209,21 @@ gridI[0] = float(1)/10**6;
 gridR[0] = float(0);
 gridS[0] = totalSIR - gridI[0] - gridR[0];
 
+def dSdt(I, S, t):
+    dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S;
+    return dS_dt
+def dIdt(S, I, t):    
+    dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I;
+    return dI_dt
+def dRdt(I, R, t):
+    dR_dt = +recovRate*I - inOutRate*R;
+    return dR_dt
+
 # Runge Kutta numerical scheme
 for tn in range(totalGPoint_T - 1):
-    dSdt = -infecRate*gridS*gridI + inOutRate*totalSIR - inOutRate*gridS;
-    dIdt = +infecRate*gridS*gridI - recovRate*gridI - inOutRate*gridI;
-    dRdt = +recovRate*gridI - inOutRate*gridR;
-    RungeKutta4(gridS, gridT, dSdt, dt, tn);
-    RungeKutta4(gridI, gridT, dIdt, dt, tn);
-    RungeKutta4(gridR, gridT, dRdt, dt, tn);   
+    AlvaRungeKutta4YZ(dSdt, gridI, gridS, gridT, dt, tn);
+    AlvaRungeKutta4YZ(dIdt, gridS, gridI, gridT, dt, tn);
+    AlvaRungeKutta4YZ(dRdt, gridI, gridR, gridT, dt, tn);   
     
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = AlvaFigSize)
