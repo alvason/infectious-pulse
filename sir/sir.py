@@ -35,15 +35,22 @@ plt.text(0,0.0/3,r'$ \frac{\partial R(t)}{\partial t} = \
 plt.show()
 
 # define RungeKutta solver for numerical solution
-def AlvaRungeKutta4YZ(dYdx, gridZ, gridY, gridX, dx, xn):
+def AlvaRungeKutta4ZYx(dZdx, dYdx, gridZ, gridY, gridX, dx, xn):
     zzz = gridZ[xn] ; yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
-    dydx1 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
-    dydx2 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+    dzdx1 = dZdx(gridZ[xn], gridY[xn], gridX[xn]); 
+    dydx1 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); 
+    gridZ[xn] = zzz + dzdx1*dx/2; gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
+    dzdx2 = dZdx(gridZ[xn], gridY[xn], gridX[xn]);
+    dydx2 = dYdx(gridZ[xn], gridY[xn], gridX[xn]);
+    gridZ[xn] = zzz + dzdx2*dx/2; gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+    dzdx3 = dZdx(gridZ[xn], gridY[xn], gridX[xn]);
     dydx3 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
+    dzdx4 = dZdx(gridZ[xn], gridY[xn], gridX[xn]); 
     dydx4 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); 
+    gridZ[xn + 1] = zzz + dx*(dzdx1/6 + dzdx2/3 + dzdx3/3 + dzdx4/6); 
     gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
     gridZ[xn] = zzz; gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
-    return (gridY[xn + 1]);
+    return (gridZ[xn + 1], gridY[xn + 1]);
 
 # <codecell>
 
@@ -62,7 +69,7 @@ infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-popul
 
 # initial condition
 minT = float(0); maxT = float(1*year);
-totalGPoint_T = int(10**4);
+totalGPoint_T = int(10**3);
 gridT = np.linspace(minT, maxT, totalGPoint_T);
 dt = (maxT - minT)/totalGPoint_T;
 
@@ -74,29 +81,25 @@ gridI[0] = float(1)/10**6;
 gridR[0] = float(0);
 gridS[0] = totalSIR - gridI[0] - gridR[0];
 
-def dSdt(I, S, t):
+def dSdt(S, I, t):
     dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S;
     return dS_dt
 def dIdt(S, I, t):    
     dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I;
     return dI_dt
-def dRdt(I, R, t):
-    dR_dt = +recovRate*I - inOutRate*R;
-    return dR_dt
+
 
 # Runge Kutta numerical scheme
 for tn in range(totalGPoint_T - 1):
-    AlvaRungeKutta4YZ(dSdt, gridI, gridS, gridT, dt, tn);
-    AlvaRungeKutta4YZ(dIdt, gridS, gridI, gridT, dt, tn);
-    AlvaRungeKutta4YZ(dRdt, gridI, gridR, gridT, dt, tn);   
+    AlvaRungeKutta4ZYx(dSdt, dIdt, gridS, gridI, gridT, dt, tn)  
     
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridT, gridS, label = r'$ S(t) $')
-plt.plot(gridT, gridR, label = r'$ R(t) $')
+#plt.plot(gridT, gridR, label = r'$ R(t) $')
 plt.plot(gridT, gridI, label = r'$ I(t) $')
 plt.plot(gridT, infecRate*gridS*gridI*day, label = r'$ \beta \ S(t)I(t) $', linestyle = 'dotted', color = 'red')
-plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
+#plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
 plt.grid(True)
 plt.title(r'$ Prevalence \ and \ incidence \ of \ SIR \ (R_0 = %f,\ \gamma = %f,\ \beta = %f) $'%(reprodNum, recovRate, infecRate), fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
@@ -106,8 +109,19 @@ plt.show()
 
 # <codecell>
 
+# define RungeKutta solver for numerical solution
+def AlvaRungeKutta4YZ(dYdx, gridZ, gridY, gridX, dx, xn):
+    zzz = gridZ[xn] ; yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
+    dydx1 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
+    dydx2 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+    dydx3 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
+    dydx4 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); 
+    gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
+    gridZ[xn] = zzz; gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
+    return (gridY[xn + 1]);
+
 # setting parameter
-timeUnit = 'year'
+timeUnit = 'day'
 if timeUnit == 'day':
     day = 1; year = 365; 
 elif timeUnit == 'year':
@@ -120,8 +134,8 @@ recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
 infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
 
 # initial condition
-minT = float(0); maxT = float(60*year);
-totalGPoint_T = int(20**4);
+minT = float(0); maxT = float(1*year);
+totalGPoint_T = int(10**3);
 gridT = np.linspace(minT, maxT, totalGPoint_T);
 dt = (maxT - minT)/totalGPoint_T;
 
