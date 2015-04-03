@@ -65,8 +65,8 @@ def Y_function(x):
     return Y
 
 # numerical griding
-totalGPoint_X = int(18**1 + 1);
-minX = float(-0.9); maxX = float(0.9);
+totalGPoint_X = int(18 + 1);
+minX = float(-0.99); maxX = float(0.99);
 spacingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
 gridX = spacingX[0]
 dx = spacingX[1]
@@ -90,8 +90,8 @@ for xn in range(totalGPoint_X - 1):
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 6))
-plt.plot(gridX, gridY_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
+plt.figure(numberingFig, figsize = (12, 8))
+plt.plot(gridX, gridY_A, label = r'$ Analytic \ Exact $')
 plt.plot(gridX, gridY_E, label = r'$ Euler $', marker = '^')
 plt.plot(gridX, gridY, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
@@ -102,12 +102,12 @@ plt.ylabel(r'$ y $', fontsize = AlvaFontSize);
 plt.legend(loc = (1, 0));
 plt.text(maxX*1.2, 1, r'$ \frac{\partial y(x)}{\partial x} = \frac{-x}{y} = \frac{-x}{(1 - x^2)^{1/2}} $'
          , fontsize = 1.2*AlvaFontSize);
-plt.text(maxX*1.2, 4.0/5, r'$ y = (1 - x^2)^{1/2} $', fontsize = 1.2*AlvaFontSize);
+plt.text(maxX*1.2, 3.0/5, r'$ y(x) = (1 - x^2)^{1/2} $', fontsize = 1.2*AlvaFontSize);
 plt.show();
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 6))
+plt.figure(numberingFig, figsize = (12, 4))
 plt.plot(gridX, gridY - gridY_A, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
 plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one (\O(h^5) = %f) $'%(dx**5)
@@ -182,7 +182,7 @@ plt.show();
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 6))
+plt.figure(numberingFig, figsize = (12, 4))
 plt.plot(gridX, gridY - gridY_A, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
 plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one (\O(h^5) = %f) $'%(dx**5)
@@ -287,7 +287,7 @@ plt.show()
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 6))
+plt.figure(numberingFig, figsize = (12, 4))
 plt.plot(gridX, gridZ - gridZ_A, label = r'$ z(x) $', marker = '^')
 plt.plot(gridX, gridY - gridY_A, label = r'$ y(x) $', marker = 'o')
 plt.grid(True)
@@ -340,13 +340,14 @@ def AlvaRungeKutta4List(dYdx_array, gridY_array, gridX, dx, xn):
     gridX[xn] = xxx; 
     return (gridY_array[:, xn + 1]);
 
+
 # Effectiveness of the algorithm
-def dZdx(zyx = [], *args):
-    dZ_dx = -zyx[1]
+def dZdx(yx = [], *args):
+    dZ_dx = -yx[1]
     return dZ_dx
 
-def dYdx(zyx = [], *args):
-    dY_dx = zyx[0]
+def dYdx(yx = [], *args):
+    dY_dx = yx[0]
     return dY_dx
  
 def Z_function(x):
@@ -383,7 +384,7 @@ for xn in range(totalGPoint_X - 1):
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (16, 5))
+plt.figure(numberingFig, figsize = (12, 5))
 plt.plot(gridX, gridZ_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
 plt.plot(gridX, gridY_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
 
@@ -405,7 +406,7 @@ plt.show()
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (16, 5))
+plt.figure(numberingFig, figsize = (12, 4))
 plt.plot(gridX, gridY_array[0] - gridZ_A, label = r'$ z(x) $', marker = '^')
 plt.plot(gridX, gridY_array[1] - gridY_A, label = r'$ y(x) $', marker = 'o')
 plt.grid(True)
