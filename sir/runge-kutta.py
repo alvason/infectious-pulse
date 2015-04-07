@@ -45,15 +45,21 @@ plt.show()
 # <codecell>
 
 # define RK4 for one diferrential equation
-def AlvaRungeKutta4Yyx(dYdx, gridY, gridX, dx, xn):
-    yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
-    dydx1 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
-    dydx2 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
-    dydx3 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
-    dydx4 = dYdx(gridY[xn], gridX[xn]); 
-    gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
-    gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
-    return (gridY[xn + 1]);
+def AlvaRungeKutta4One(dYdx, minX, maxX, totalGPoint_X, initialY):
+    spacingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
+    gridX = spacingX[0]
+    dx = spacingX[1]
+    gridY = np.zeros(totalGPoint_X)
+    gridY[0] = initialY
+    for xn in range(totalGPoint_X - 1):
+        yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
+        dydx1 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
+        dydx2 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+        dydx3 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
+        dydx4 = dYdx(gridY[xn], gridX[xn]); 
+        gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
+        gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value   
+    return (gridY);
 
 # Effectiveness of the algorithm
 def dYdx(y, x):
@@ -83,10 +89,8 @@ for xn in range(totalGPoint_X - 1):
     gridY_E[xn + 1] = gridY_E[xn] + dx*dYdx(gridY_E[xn], gridX[xn])
 
 # RungeKutta solution
-gridY = np.zeros(totalGPoint_X)
-gridY[0] = gridY_A[0];
-for xn in range(totalGPoint_X - 1):
-    AlvaRungeKutta4Yyx(dYdx, gridY, gridX, dx, xn)
+initialY = gridY_A[0]
+gridY = AlvaRungeKutta4One(dYdx, minX, maxX, totalGPoint_X, initialY)
 
 # plotting
 numberingFig = numberingFig + 1;
@@ -110,7 +114,7 @@ numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = (12, 4))
 plt.plot(gridX, gridY - gridY_A, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one (\O(h^5) = %f) $'%(dx**5)
+plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one \ (\O(h^5) = %f) $'%(dx**5)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y - y_{exact} $', fontsize = AlvaFontSize);
@@ -120,15 +124,21 @@ plt.show();
 # <codecell>
 
 # define RK4 for one diferrential equation
-def AlvaRungeKutta4Yyx(dYdx, gridY, gridX, dx, xn):
-    yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
-    dydx1 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
-    dydx2 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
-    dydx3 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
-    dydx4 = dYdx(gridY[xn], gridX[xn]); 
-    gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
-    gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
-    return (gridY[xn + 1]);
+def AlvaRungeKutta4One(dYdx, minX, maxX, totalGPoint_X, initialY):
+    spacingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
+    gridX = spacingX[0]
+    dx = spacingX[1]
+    gridY = np.zeros(totalGPoint_X)
+    gridY[0] = initialY
+    for xn in range(totalGPoint_X - 1):
+        yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
+        dydx1 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
+        dydx2 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+        dydx3 = dYdx(gridY[xn], gridX[xn]); gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
+        dydx4 = dYdx(gridY[xn], gridX[xn]); 
+        gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6); 
+        gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value   
+    return (gridY);
 
 # Effectiveness of the algorithm
 def dYdx(y, x):
@@ -158,10 +168,8 @@ for xn in range(totalGPoint_X - 1):
     gridY_E[xn + 1] = gridY_E[xn] + dx*dYdx(gridY_E[xn], gridX[xn])
 
 # RungeKutta solution
-gridY = np.zeros(totalGPoint_X)
-gridY[0] = gridY_A[0];
-for xn in range(totalGPoint_X - 1):
-    AlvaRungeKutta4Yyx(dYdx, gridY, gridX, dx, xn)
+initialY = gridY_A[0];
+gridY = AlvaRungeKutta4One(dYdx, minX, maxX, totalGPoint_X, initialY)
 
 # plotting
 numberingFig = numberingFig + 1;
@@ -195,23 +203,31 @@ plt.show();
 # <codecell>
 
 # define RK4 for two coupled differential equations
-def AlvaRungeKutta4ZYx(dZdx, dYdx, gridZ, gridY, gridX, dx, xn):
-    zzz = gridZ[xn] ; yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
-    dzdx1 = dZdx(gridZ[xn], gridY[xn], gridX[xn]); 
-    dydx1 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); 
-    gridZ[xn] = zzz + dzdx1*dx/2; gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
-    dzdx2 = dZdx(gridZ[xn], gridY[xn], gridX[xn]);
-    dydx2 = dYdx(gridZ[xn], gridY[xn], gridX[xn]);
-    gridZ[xn] = zzz + dzdx2*dx/2; gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
-    dzdx3 = dZdx(gridZ[xn], gridY[xn], gridX[xn]);
-    dydx3 = dYdx(gridZ[xn], gridY[xn], gridX[xn]);
-    gridZ[xn] = zzz + dzdx3*dx; gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
-    dzdx4 = dZdx(gridZ[xn], gridY[xn], gridX[xn]); 
-    dydx4 = dYdx(gridZ[xn], gridY[xn], gridX[xn]);  
-    gridZ[xn + 1] = zzz + dx*(dzdx1/6 + dzdx2/3 + dzdx3/3 + dzdx4/6); 
-    gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6);
-    gridZ[xn] = zzz; gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
-    return (gridZ[xn + 1], gridY[xn + 1]);
+def AlvaRungeKutta4Two(dZdx, dYdx, minX, maxX, totalGPoint_X, initialZ, initialY):
+    spacingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
+    gridX = spacingX[0]
+    dx = spacingX[1]
+    gridY = np.zeros(totalGPoint_X)
+    gridZ = np.zeros(totalGPoint_X)
+    gridY[0] = initialY
+    gridZ[0] = initialZ
+    for xn in range(totalGPoint_X - 1):
+        zzz = gridZ[xn] ; yyy = gridY[xn]; xxx = gridX[xn]; # keep initial value
+        dzdx1 = dZdx(gridZ[xn], gridY[xn], gridX[xn]); 
+        dydx1 = dYdx(gridZ[xn], gridY[xn], gridX[xn]); 
+        gridZ[xn] = zzz + dzdx1*dx/2; gridY[xn] = yyy + dydx1*dx/2; gridX[xn] = xxx + dx/2;
+        dzdx2 = dZdx(gridZ[xn], gridY[xn], gridX[xn]);
+        dydx2 = dYdx(gridZ[xn], gridY[xn], gridX[xn]);
+        gridZ[xn] = zzz + dzdx2*dx/2; gridY[xn] = yyy + dydx2*dx/2; gridX[xn] = xxx + dx/2;
+        dzdx3 = dZdx(gridZ[xn], gridY[xn], gridX[xn]);
+        dydx3 = dYdx(gridZ[xn], gridY[xn], gridX[xn]);
+        gridZ[xn] = zzz + dzdx3*dx; gridY[xn] = yyy + dydx3*dx; gridX[xn] = xxx + dx;
+        dzdx4 = dZdx(gridZ[xn], gridY[xn], gridX[xn]); 
+        dydx4 = dYdx(gridZ[xn], gridY[xn], gridX[xn]);  
+        gridZ[xn + 1] = zzz + dx*(dzdx1/6 + dzdx2/3 + dzdx3/3 + dzdx4/6); 
+        gridY[xn + 1] = yyy + dx*(dydx1/6 + dydx2/3 + dydx3/3 + dydx4/6);
+        gridZ[xn] = zzz; gridY[xn] = yyy; gridX[xn] = xxx; # restore to initial value
+    return (gridZ, gridY);
 
 # Effectiveness of the algorithm
 def dZdx(z, y, x):
@@ -255,12 +271,11 @@ for xn in range(totalGPoint_X - 1):
     gridY_E[xn + 1] = gridY_E[xn] + dx*dYdx(gridZ_E[xn], gridY_E[xn], gridX[xn])
 
 # RungeKutta solution
-gridZ = np.zeros(totalGPoint_X)
-gridY = np.zeros(totalGPoint_X)
-gridZ[0] = gridZ_A[0];
-gridY[0] = gridY_A[0];
-for xn in range(totalGPoint_X - 1):
-    AlvaRungeKutta4ZYx(dZdx, dYdx, gridZ, gridY, gridX, dx, xn)
+initialZ = gridZ_A[0];
+initialY = gridY_A[0];
+solutionZY = AlvaRungeKutta4Two(dZdx, dYdx, minX, maxX, totalGPoint_X, initialZ, initialY)
+gridZ = solutionZY[0]
+gridY = solutionZY[1]
 
 # plotting
 numberingFig = numberingFig + 1;
@@ -301,53 +316,68 @@ plt.show();
 # <codecell>
 
 # define RK4 for a list of coupled differential equations
-def AlvaRungeKutta4List(dYdx_array, gridY_array, gridX, dx, xn):
-    m = dYdx_array.size # size of a list of equation
-    # keep initial value
-    yyy_array = np.copy(gridY_array[:, xn])
-    xxx = gridX[xn]
-    # first step
-    dydx1_array = np.zeros(m)
-    gridYX_array = np.append(gridY_array[:, xn], gridX[xn]) # reunion with new values
-    for i in range(m):
-        dydx1_array[i] = dYdx_array[i](gridYX_array) # computing ratio
-        gridY_array[i, xn] = yyy_array[i] + dydx1_array[i]*dx/2 # computing new high
-    gridX[xn] = xxx + dx/2
-    # second half step
-    dydx2_array = np.zeros(m)
-    gridYX_array = np.append(gridY_array[:, xn], gridX[xn]) # reunion with new values
-    for i in range(m):
-        dydx2_array[i] = dYdx_array[i](gridYX_array) 
-        gridY_array[i, xn] = yyy_array[i] + dydx2_array[i]*dx/2 
-    gridX[xn] = xxx + dx/2
-    # third half step
-    dydx3_array = np.zeros(m)
-    gridYX_array = np.append(gridY_array[:, xn], gridX[xn]) # reunion with new values
-    for i in range(m):
-        dydx3_array[i] = dYdx_array[i](gridYX_array)
-        gridY_array[i, xn] = yyy_array[i] + dydx3_array[i]*dx
-    gridX[xn] = xxx + dx
-    # final step
-    dydx4_array = np.zeros(m)
-    gridYX_array = np.append(gridY_array[:, xn], gridX[xn]) # reunion with new values
-    for i in range(m):
-        dydx4_array[i] = dYdx_array[i](gridYX_array)
-    # computing the next move by accumulate all the steps
-    for i in range(m):
-        gridY_array[i, xn + 1] = yyy_array[i] + dx*(dydx1_array[i]/6 + dydx2_array[i]/3 + dydx3_array[i]/3 + dydx4_array[i]/6)
-    # restore to initial value
-    gridY_array[:, xn] = np.copy(yyy_array)
-    gridX[xn] = xxx; 
-    return (gridY_array[:, xn + 1]);
+def AlvaRungeKutta4List(pde_array, startingOut_Value, min_Input, max_Input, totalGPoint_Input):
+    # size of a list of equations
+    outWay = pde_array.size
+    # initialize the whole memory-space for output and input
+    inWay = 1;
+    gridOutIn_array = np.zeros([outWay + inWay, totalGPoint_Input])
+    # loading starting output values (define the first m arrays as output memory-space)
+    for i in range(outWay):
+        gridOutIn_array[i, 0] = startingOut_Value[i]
+    # griding input value 
+    gridingInput = np.linspace(min_Input, max_Input, num = totalGPoint_Input, retstep = True)
+    # loading input values to (define the final array as input memory-space)
+    gridOutIn_array[-inWay] = gridingInput[0]
+    # step-size (increment of input)
+    dx = gridingInput[1]
+    # starting
+    # initialize the memory-space for local try-step 
+    dydx1_array = np.zeros(outWay)
+    dydx2_array = np.zeros(outWay)
+    dydx3_array = np.zeros(outWay)
+    dydx4_array = np.zeros(outWay)
+    for inPoint in range(totalGPoint_Input - 1):
+        # keep initial value
+        currentOut_Value = np.copy(gridOutIn_array[:-inWay, inPoint])
+        currentIn_Value = np.copy(gridOutIn_array[-inWay, inPoint])
+        # first try-step
+        for i in range(outWay):
+            dydx1_array[i] = pde_array[i](gridOutIn_array[:, inPoint]) # computing ratio   
+        gridOutIn_array[:-inWay, inPoint] = currentOut_Value[:] + dydx1_array[:]*dx/2 # update output
+        gridOutIn_array[-inWay, inPoint] = currentIn_Value + dx/2 # update input
+        # second half try-step
+        for i in range(outWay):
+            dydx2_array[i] = pde_array[i](gridOutIn_array[:, inPoint]) # computing ratio
+        gridOutIn_array[:-inWay, inPoint] = currentOut_Value[:] + dydx2_array[:]*dx/2 # update output
+        gridOutIn_array[-inWay, inPoint] = currentIn_Value + dx/2
+        # third half try-step
+        for i in range(outWay):
+            dydx3_array[i] = pde_array[i](gridOutIn_array[:, inPoint]) # computing ratio
+        gridOutIn_array[:-inWay, inPoint] = currentOut_Value[:] + dydx3_array[:]*dx # update output
+        gridOutIn_array[-inWay, inPoint] = currentIn_Value + dx
+        # fourth try-step
+        for i in range(outWay):
+            dydx4_array[i] = pde_array[i](gridOutIn_array[:, inPoint]) # computing ratio
+        # solid step (update the next output) by accumulate all the try-steps with proper adjustment
+        gridOutIn_array[:-inWay, inPoint + 1] = currentOut_Value[:] + dx*(dydx1_array[:]/6 
+                                                                                      + dydx2_array[:]/3 
+                                                                                      + dydx3_array[:]/3 
+                                                                                      + dydx4_array[:]/6)
+        # restore to initial value
+        gridOutIn_array[:-inWay, inPoint] = np.copy(currentOut_Value)
+        gridOutIn_array[-inWay, inPoint] = np.copy(currentIn_Value); 
+        # end of loop
+    return (gridOutIn_array[:-inWay]);
 
 
 # Effectiveness of the algorithm
-def dZdx(yx = [], *args):
-    dZ_dx = -yx[1]
+def dZdx(OutInWay = [], *args):
+    dZ_dx = -OutInWay[1]
     return dZ_dx
 
-def dYdx(yx = [], *args):
-    dY_dx = yx[0]
+def dYdx(OutInWay = [], *args):
+    dY_dx = OutInWay[0]
     return dY_dx
  
 def Z_function(x):
@@ -361,9 +391,9 @@ def Y_function(x):
 # numerical griding
 totalGPoint_X = int(10**2 + 1);
 minX = float(0); maxX = float(10*np.pi);
-spacingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
-gridX = spacingX[0]
-dx = spacingX[1]
+gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
+gridX = gridingX[0]
+dx = gridingX[1]
 
 # Analytic solution
 gridZ_A = np.zeros(totalGPoint_X)
@@ -373,23 +403,18 @@ for xn in range(totalGPoint_X):
     gridY_A[xn] = Y_function(gridX[xn])
 
 # RungeKutta solution
-gridZ = np.zeros(totalGPoint_X)
-gridY = np.zeros(totalGPoint_X)
-gridZ[0] = gridZ_A[0];
-gridY[0] = gridY_A[0];
-dYdx_array = np.array([dZdx, dYdx])
-gridY_array = np.array([gridZ, gridY])
-for xn in range(totalGPoint_X - 1):
-    AlvaRungeKutta4List(dYdx_array, gridY_array, gridX, dx, xn)
+pde_array = np.array([dZdx, dYdx])
+startingOut_Value = np.array([Z_function(minX), Y_function(minX)])
+gridOut_array = AlvaRungeKutta4List(pde_array, startingOut_Value, minX, maxX, totalGPoint_X)
 
 # plotting
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = (12, 5))
-plt.plot(gridX, gridZ_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
-plt.plot(gridX, gridY_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
+plt.plot(gridX, gridZ_A, label = r'$ Analytic-Exact $', linewidth = 6.0, alpha = 0.3)
+plt.plot(gridX, gridY_A, label = r'$ Analytic-Exact $', linewidth = 6.0, alpha = 0.3)
 
-plt.plot(gridX, gridY_array[0], label = r'$ RungeKutta $', marker = 'o')
-plt.plot(gridX, gridY_array[1], label = r'$ RungeKutta $', marker = 'o')
+plt.plot(gridX, gridOut_array[0], label = r'$ RungeKutta $', marker = 'o')
+plt.plot(gridX, gridOut_array[1], label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
 plt.title(r'$ Effectiveness \ of \ Runge-Kutta-4th-coupled \ (\O(h) = %f) $'%(dx)
           , fontsize = AlvaFontSize);
@@ -407,8 +432,8 @@ plt.show()
 # plotting
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = (12, 4))
-plt.plot(gridX, gridY_array[0] - gridZ_A, label = r'$ z(x) $', marker = '^')
-plt.plot(gridX, gridY_array[1] - gridY_A, label = r'$ y(x) $', marker = 'o')
+plt.plot(gridX, gridOut_array[0] - gridZ_A, label = r'$ z(x) $', marker = '^')
+plt.plot(gridX, gridOut_array[1] - gridY_A, label = r'$ y(x) $', marker = 'o')
 plt.grid(True)
 plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-coupled \ (\O(h^5) = %f) $'%(dx**5)
           , fontsize = AlvaFontSize);
