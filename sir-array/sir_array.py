@@ -140,7 +140,7 @@ gridR = gridOut_array[2]
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.contourf(gridT, gridX, gridI, levels = np.arange(0, 0.12, 0.002))
-plt.title(r'$ Many-strain \ SIR $', fontsize = AlvaFontSize)
+plt.title(r'$ Many \ strains \ infectious \ pulse $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
 plt.ylabel(r'$ Strain \ space $', fontsize = AlvaFontSize);
 plt.colorbar()
