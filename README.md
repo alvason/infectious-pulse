@@ -5,7 +5,8 @@ Computation source code for the model will be available as the following:
 
 ## infectious-pulse
 ### [many-strain SIR model](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation.ipynb)
-![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation.png)
+![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-continuous.png)
+![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-discrete.png)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/many-strain-SIR.png)
 ### [one strain SIR epidemiological model](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir/sir.ipynb)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir/figure/sir.png)
