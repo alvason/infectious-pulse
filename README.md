@@ -1,7 +1,7 @@
 # Vaccination-Wave
 Manuscript for submitting to the journal (such as Proceedings of the Royal Society B)
 
-### computation source code for the model will be available as the following:
+Computation source code for the model will be available as the following:
 
 ## infectious-pulse
 ### [many-strain SIR model](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation.ipynb)
