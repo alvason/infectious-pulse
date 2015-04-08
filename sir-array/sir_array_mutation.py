@@ -25,7 +25,7 @@ from mpl_toolkits.mplot3d.axes3d import Axes3D
 import alva_machinery as alva
 
 AlvaFontSize = 23;
-AlvaFigSize = (9, 6);
+AlvaFigSize = (9, 7);
 numberingFig = 0;
 
 numberingFig = numberingFig + 1;
@@ -55,7 +55,7 @@ reprodNum = 1.8 # basic reproductive number R0: one infected person will transmi
 recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
 infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
 inOutRate = float(1)/(30*year) # birth rate per year
-mutatRate = float(1)/10**6 # mutation rate
+mutatRate = float(3)/10**3 # mutation rate
 
 # time boundary and griding condition
 minT = float(0); maxT = float(1*year);
@@ -67,7 +67,7 @@ dt = spacingT[1]
 
 # space boundary and griding condition
 minX = float(0); maxX = float(9);
-totalGPoint_X = int(10);
+totalGPoint_X = int(9 + 1);
 gridX = np.linspace(minX, maxX, totalGPoint_X);
 gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
 gridX = gridingX[0]
@@ -139,11 +139,16 @@ gridR = gridOut_array[2]
 
 numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = AlvaFigSize)
-plt.contourf(gridT, gridX, gridI, levels = np.arange(0, 0.12, 0.002))
-plt.title(r'$ Many \ strains \ infectious \ pulse $', fontsize = AlvaFontSize)
+plt.contourf(gridT, gridX, gridI, levels = np.arange(0, 0.12, 0.001))
+plt.title(r'$ Infectious \ pulse \ I(x,t) \ by \ mutation $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
-plt.ylabel(r'$ Strain \ space $', fontsize = AlvaFontSize);
+plt.ylabel(r'$ discrete \ space \ (strain) $', fontsize = AlvaFontSize);
 plt.colorbar()
+plt.text(maxT*4.0/3, maxX*5.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
+plt.text(maxT*4.0/3, maxX*4.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
+plt.text(maxT*4.0/3, maxX*3.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
+plt.text(maxT*4.0/3, maxX*2.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
+plt.text(maxT*4.0/3, maxX*1.0/6, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
 plt.show()
 
 numberingFig = numberingFig + 1;
@@ -151,7 +156,7 @@ plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridT, gridS.T)
 plt.plot(gridT, gridR.T)
 plt.plot(gridT, gridI.T)
-plt.plot(gridT, gridS.T + gridI.T + gridR.T, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
+plt.plot(gridT, (gridS + gridI + gridR).T, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
 plt.title(r'$ Many-strain \ SIR $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
 plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
@@ -164,6 +169,7 @@ plt.show()
 
 # <codecell>
 
+'''
 # plot by listing each strain 
 numberingFig = numberingFig + 1;
 for i in range(totalGPoint_X):
@@ -186,6 +192,7 @@ for i in range(totalGPoint_X):
     plt.text(maxT, totalSIR*3.0/6, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
     plt.legend(loc = (1,0))
     plt.show()
+'''
 
 # <codecell>
 
@@ -197,4 +204,31 @@ plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
 plt.ylabel(r'$ Strain \ space $', fontsize = AlvaFontSize);
 plt.colorbar()
 plt.show()
+
+# <codecell>
+
+
+# 3D plotting
+# define GridXX function for making 2D-grid from 1D-grid
+def AlvaGridXX(gridX, totalGPoint_Y):
+    gridXX = gridX;
+    for n in range(totalGPoint_Y - 1):
+        gridXX = np.vstack((gridXX, gridX))
+    return gridXX
+# for 3D plotting
+X = AlvaGridXX(gridT, totalGPoint_X); 
+Y = AlvaGridXX(gridX, totalGPoint_T).T; 
+Z = gridI
+numberingFig = numberingFig + 1;
+figure = plt.figure(numberingFig, figsize=(9, 7));
+figure3D = Axes3D(figure)
+figure3D.view_init(30, -80)
+
+figure3D.plot_surface(X, Y, Z, alpha = 0.5)
+plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
+plt.ylabel(r'$x \ (space)$', fontsize = AlvaFontSize)
+plt.show()
+
+# <codecell>
+
 
