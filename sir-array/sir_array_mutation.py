@@ -66,8 +66,8 @@ gridT = spacingT[0]
 dt = spacingT[1]
 
 # space boundary and griding condition
-minX = float(0); maxX = float(9);
-totalGPoint_X = int(9 + 1);
+minX = float(0); maxX = float(1);
+totalGPoint_X = int(10 + 1);
 gridX = np.linspace(minX, maxX, totalGPoint_X);
 gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
 gridX = gridingX[0]
