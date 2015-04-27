@@ -1,6 +1,7 @@
 # infectious-pulse
-### [many-strain SIR model](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation.ipynb)
+### [many-strain SIR model with mutation and immunity](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_cross_immunity.ipynb)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-immunity-discrete.png)
+### [many-strain SIR model with mutation](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation.ipynb)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-continuous.png)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-discrete.png)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/many-strain-SIR.png)
