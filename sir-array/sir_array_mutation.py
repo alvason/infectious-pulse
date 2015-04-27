@@ -18,8 +18,6 @@ date:   03/23/2015
 
 import numpy as np
 import matplotlib.pyplot as plt
-import time
-import IPython.display as idisplay
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 import alva_machinery as alva
@@ -41,47 +39,7 @@ plt.text(0,0.0/3,r'$ \frac{\partial R_n(t)}{\partial t} = \
          +\gamma I_n(t) - \mu R_n(t) $', fontsize = 1.2*AlvaFontSize)
 plt.show()
 
-# <codecell>
-
-# setting parameter
-timeUnit = 'year'
-if timeUnit == 'day':
-    day = 1; year = 365; 
-elif timeUnit == 'year':
-    year = 1; day = float(1)/365; 
-    
-totalSIR = float(1); # total population
-reprodNum = 1.8 # basic reproductive number R0: one infected person will transmit to 1.8 person 
-recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
-infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
-inOutRate = float(1)/(30*year) # birth rate per year
-mutatRate = float(3)/10**3 # mutation rate
-
-# time boundary and griding condition
-minT = float(0); maxT = float(1*year);
-totalGPoint_T = int(10**3 + 1);
-gridT = np.linspace(minT, maxT, totalGPoint_T);
-spacingT = np.linspace(minT, maxT, num = totalGPoint_T, retstep = True)
-gridT = spacingT[0]
-dt = spacingT[1]
-
-# space boundary and griding condition
-minX = float(0); maxX = float(1);
-totalGPoint_X = int(10 + 1);
-gridX = np.linspace(minX, maxX, totalGPoint_X);
-gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
-gridX = gridingX[0]
-dx = gridingX[1]
-
-gridS_array = np.zeros([totalGPoint_X, totalGPoint_T])
-gridI_array = np.zeros([totalGPoint_X, totalGPoint_T])
-gridR_array = np.zeros([totalGPoint_X, totalGPoint_T])
-
-# initial output condition
-gridI_array[0:1, 0] = float(1)/10**6
-gridR_array[0, 0] = float(0)
-gridS_array[:, 0] = totalSIR - gridI_array[:, 0] - gridR_array[:, 0]
-
+# define many -strain S-I-R equation
 def dSdt_array(SIRxt = [], *args):
     # naming
     S = SIRxt[0]
@@ -94,6 +52,7 @@ def dSdt_array(SIRxt = [], *args):
     for xn in range(x_totalPoint):
         dS_dt_array[xn] = -infecRate*S[xn]*I[xn] + inOutRate*totalSIR - inOutRate*S[xn]
     return(dS_dt_array)
+
 def dIdt_array(SIRxt = [], *args):
     # naming
     S = SIRxt[0]
@@ -126,6 +85,46 @@ def dRdt_array(SIRxt = [], *args):
     for xn in range(x_totalPoint):
         dR_dt_array[xn] = +recovRate*I[xn] - inOutRate*R[xn]
     return(dR_dt_array)
+
+# <codecell>
+
+# setting parameter
+timeUnit = 'year'
+if timeUnit == 'day':
+    day = 1; year = 365; 
+elif timeUnit == 'year':
+    year = 1; day = float(1)/365; 
+    
+totalSIR = float(1); # total population
+reprodNum = 1.8 # basic reproductive number R0: one infected person will transmit to 1.8 person 
+recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
+infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
+inOutRate = float(1)/(30*year) # birth rate per year
+mutatRate = float(3)/10**3 # mutation rate
+
+# time boundary and griding condition
+minT = float(0)*year
+maxT = float(1)*year
+totalGPoint_T = int(10**3 + 1)
+spacingT = np.linspace(minT, maxT, num = totalGPoint_T, retstep = True)
+gridT = spacingT[0]
+dt = spacingT[1]
+
+# space boundary and griding condition
+minX = float(0); maxX = float(1);
+totalGPoint_X = int(10 + 1)
+gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
+gridX = gridingX[0]
+dx = gridingX[1]
+
+gridS_array = np.zeros([totalGPoint_X, totalGPoint_T])
+gridI_array = np.zeros([totalGPoint_X, totalGPoint_T])
+gridR_array = np.zeros([totalGPoint_X, totalGPoint_T])
+
+# initial output condition
+gridI_array[0:1, 0] = float(1)/10**6
+gridR_array[0, 0] = float(0)
+gridS_array[:, 0] = totalSIR - gridI_array[:, 0] - gridR_array[:, 0]
 
 # Runge Kutta numerical solution
 pde_array = np.array([dSdt_array, dIdt_array, dRdt_array])
@@ -169,7 +168,7 @@ plt.show()
 
 # <codecell>
 
-'''
+
 # plot by listing each strain 
 numberingFig = numberingFig + 1;
 for i in range(totalGPoint_X):
@@ -192,7 +191,6 @@ for i in range(totalGPoint_X):
     plt.text(maxT, totalSIR*3.0/6, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
     plt.legend(loc = (1,0))
     plt.show()
-'''
 
 # <codecell>
 
@@ -206,7 +204,6 @@ plt.colorbar()
 plt.show()
 
 # <codecell>
-
 
 # 3D plotting
 # define GridXX function for making 2D-grid from 1D-grid
@@ -225,6 +222,29 @@ figure3D = Axes3D(figure)
 figure3D.view_init(30, -80)
 
 figure3D.plot_surface(X, Y, Z, alpha = 0.5)
+plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
+plt.ylabel(r'$x \ (space)$', fontsize = AlvaFontSize)
+plt.show()
+
+# <codecell>
+
+# 3D plotting
+# define GridXX function for making 2D-grid from 1D-grid
+def AlvaGridXX(gridX, totalGPoint_Y):
+    gridXX = gridX;
+    for n in range(totalGPoint_Y - 1):
+        gridXX = np.vstack((gridXX, gridX))
+    return gridXX
+# for 3D plotting
+X = AlvaGridXX(gridT, totalGPoint_X); 
+Y = AlvaGridXX(gridX, totalGPoint_T).T; 
+Z = gridI
+numberingFig = numberingFig + 1;
+figure = plt.figure(numberingFig, figsize=(9, 7));
+figure3D = Axes3D(figure)
+figure3D.view_init(30, -80)
+
+figure3D.plot_wireframe(X, Y, Z, cstride = 10000)
 plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
 plt.ylabel(r'$x \ (space)$', fontsize = AlvaFontSize)
 plt.show()

@@ -19,9 +19,6 @@ date:   03/23/2015
 
 import numpy as np
 import matplotlib.pyplot as plt
-import time
-import IPython.display as idisplay
-from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 AlvaFontSize = 23;
 AlvaFigSize = (16, 6);

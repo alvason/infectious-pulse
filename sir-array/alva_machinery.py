@@ -19,9 +19,6 @@ Home-made machinery for solving partial differential equations
 '''
 import numpy as np
 import matplotlib.pyplot as plt
-import time
-import IPython.display as idisplay
-from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 AlvaFontSize = 23;
 AlvaFigSize = (15, 3);
@@ -94,4 +91,7 @@ def AlvaRungeKutta4ArrayXT(pde_array, startingOut_Value, minX_In, maxX_In, total
         gridOutIn_array[-inWay, 0, tn] = np.copy(currentIn_T_Value)
         # end of loop
     return (gridOutIn_array[:-inWay, :]);
+
+# <codecell>
+
 

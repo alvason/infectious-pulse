@@ -19,26 +19,22 @@ date:   03/23/2015
 
 import numpy as np
 import matplotlib.pyplot as plt
-import time
-import IPython.display as idisplay
-from mpl_toolkits.mplot3d.axes3d import Axes3D
 
-AlvaFontSize = 23;
-AlvaFigSize = (16, 6);
-numberingFig = 0;
+AlvaFontSize = 23
+AlvaFigSize = (16, 6)
+numberingFig = 0
 
 
-numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize=(12,3))
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize=(12, 3))
 plt.axis('off')
-plt.title(r'$ Susceptible-Infectious-Recovered \ equation $',fontsize = AlvaFontSize)
-plt.text(0,2.0/3,r'$ \frac{\partial S(t)}{\partial t} = \
+plt.title(r'$ Susceptible-Infectious-Recovered \ equation $', fontsize = AlvaFontSize)
+plt.text(0, 2.0/3, r'$ \frac{\partial S(t)}{\partial t} = \
          -\beta S(t)I(t) +\mu N -\mu S(t)$', fontsize = 1.2*AlvaFontSize)
-plt.text(0,1.0/3,r'$ \frac{\partial I(t)}{\partial t} = \
+plt.text(0, 1.0/3, r'$ \frac{\partial I(t)}{\partial t} = \
          +\beta S(t)I(t) - \gamma I(t) -\mu I(t) $', fontsize = 1.2*AlvaFontSize)
-plt.text(0,0.0/3,r'$ \frac{\partial R(t)}{\partial t} = \
+plt.text(0, 0.0/3, r'$ \frac{\partial R(t)}{\partial t} = \
          +\gamma I(t) - \mu R(t) $', fontsize = 1.2*AlvaFontSize)
-
 plt.show()
 
 # define RK4 for a list of coupled differential equations
@@ -46,7 +42,7 @@ def AlvaRungeKutta4List(pde_array, startingOut_Value, min_Input, max_Input, tota
     # size of a list of equations
     outWay = pde_array.size
     # initialize the whole memory-space for output and input
-    inWay = 1;
+    inWay = 1
     gridOutIn_array = np.zeros([outWay + inWay, totalGPoint_Input])
     # loading starting output values (define the first m arrays as output memory-space)
     for i in range(outWay):
@@ -92,52 +88,65 @@ def AlvaRungeKutta4List(pde_array, startingOut_Value, min_Input, max_Input, tota
                                                                                       + dydx4_array[:]/6)
         # restore to initial value
         gridOutIn_array[:-inWay, inPoint] = np.copy(currentOut_Value)
-        gridOutIn_array[-inWay, inPoint] = np.copy(currentIn_Value); 
+        gridOutIn_array[-inWay, inPoint] = np.copy(currentIn_Value)
         # end of loop
-    return (gridOutIn_array[:-inWay]);
+    return (gridOutIn_array[:-inWay])
 
 # <codecell>
 
+''' starting from one infected '''
 # setting parameter
 timeUnit = 'day'
 if timeUnit == 'day':
-    day = 1; year = 365; 
+    day = 1
+    year = 365 
 elif timeUnit == 'year':
-    year = 1; day = float(1)/365; 
+    year = 1
+    day = float(1)/365 
     
-totalSIR = float(1); # total population
-reprodNum = 1.8 # basic reproductive number R0: one infected person will transmit to 1.8 person 
+totalSIR = float(1) # total population
+reprodNum = float(1.8) # basic reproductive number R0: one infected person will transmit to 1.8 person 
 recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
-infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
 inOutRate = float(1)/(30*year) # birth rate per year
+infecRate = reprodNum*(recovRate + inOutRate)/totalSIR # per year, per person, per total-population
 
-# initial condition
-minT = float(0); maxT = float(1*year);
-totalGPoint_T = int(10**4 + 1);
-gridT = np.linspace(minT, maxT, totalGPoint_T);
+# initial boundary condition
+minT = float(0)
+maxT = float(1*year)
+totalGPoint_T = int(10**4 + 1)
 spacingT = np.linspace(minT, maxT, num = totalGPoint_T, retstep = True)
 gridT = spacingT[0]
 dt = spacingT[1]
 
-gridS = np.zeros(totalGPoint_T);
-gridI = np.zeros(totalGPoint_T);
-gridR = np.zeros(totalGPoint_T);
+gridS = np.zeros(totalGPoint_T)
+gridI = np.zeros(totalGPoint_T)
+gridR = np.zeros(totalGPoint_T)
 
-gridI[0] = float(1)/10**6;
-gridR[0] = float(0);
-gridS[0] = totalSIR - gridI[0] - gridR[0];
+# initial output condition
+gridI[0] = float(1)/10**6
+gridR[0] = float(0)
+gridS[0] = totalSIR - gridI[0] - gridR[0]
 
 def dSdt(SIRT = [], *args):
-    S = SIRT[0]; I = SIRT[1]; R = SIRT[2]; T = SIRT[3];
-    dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S;
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3]
+    dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S
     return dS_dt
 def dIdt(SIRT = [], *args):
-    S = SIRT[0]; I = SIRT[1]; R = SIRT[2]; T = SIRT[3];    
-    dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I;
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3] 
+    dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I
     return dI_dt
 def dRdt(SIRT = [], *args):
-    S = SIRT[0]; I = SIRT[1]; R = SIRT[2]; T = SIRT[3];    
-    dR_dt = recovRate*I - inOutRate*R;
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3]
+    dR_dt = recovRate*I - inOutRate*R
     return dR_dt
 
 # Runge Kutta numerical solution
@@ -168,46 +177,59 @@ plt.show()
 
 # <codecell>
 
+''' approaching equilibrium state from one infected '''
 # setting parameter
 timeUnit = 'year'
 if timeUnit == 'day':
-    day = 1; year = 365; 
+    day = 1
+    year = 365 
 elif timeUnit == 'year':
-    year = 1; day = float(1)/365; 
+    year = 1
+    day = float(1)/365 
     
-totalSIR = float(1); # total population
-reprodNum = 1.8 # basic reproductive number R0: one infected person will transmit to 1.8 person 
+totalSIR = float(1) # total population
+reprodNum = float(1.8) # basic reproductive number R0: one infected person will transmit to 1.8 person 
 recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
-infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
 inOutRate = float(1)/(30*year) # birth rate per year
+infecRate = reprodNum*(recovRate + inOutRate)/totalSIR # per year, per person, per total-population
 
-# initial condition
-minT = float(0); maxT = float(200*year);
-totalGPoint_T = int(10**4 + 1);
-gridT = np.linspace(minT, maxT, totalGPoint_T);
+# initial boundary condition
+minT = float(0)
+maxT = float(200*year)
+totalGPoint_T = int(10**4 + 1)
 spacingT = np.linspace(minT, maxT, num = totalGPoint_T, retstep = True)
 gridT = spacingT[0]
 dt = spacingT[1]
 
-gridS = np.zeros(totalGPoint_T);
-gridI = np.zeros(totalGPoint_T);
-gridR = np.zeros(totalGPoint_T);
+gridS = np.zeros(totalGPoint_T)
+gridI = np.zeros(totalGPoint_T)
+gridR = np.zeros(totalGPoint_T)
 
-gridI[0] = float(1)/10**6;
-gridR[0] = float(0);
-gridS[0] = totalSIR - gridI[0] - gridR[0];
+# initial output condition
+gridI[0] = float(1)/10**6
+gridR[0] = float(0)
+gridS[0] = totalSIR - gridI[0] - gridR[0]
 
 def dSdt(SIRT = [], *args):
-    S = SIRT[0]; I = SIRT[1]; R = SIRT[2]; T = SIRT[3];
-    dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S;
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3]
+    dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S
     return dS_dt
 def dIdt(SIRT = [], *args):
-    S = SIRT[0]; I = SIRT[1]; R = SIRT[2]; T = SIRT[3];    
-    dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I;
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3] 
+    dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I
     return dI_dt
 def dRdt(SIRT = [], *args):
-    S = SIRT[0]; I = SIRT[1]; R = SIRT[2]; T = SIRT[3];    
-    dR_dt = recovRate*I - inOutRate*R;
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3]
+    dR_dt = recovRate*I - inOutRate*R
     return dR_dt
 
 # Runge Kutta numerical solution
@@ -234,6 +256,110 @@ plt.text(maxT, totalSIR*6.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontS
 plt.text(maxT, totalSIR*5.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
 plt.text(maxT, totalSIR*4.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
 plt.text(maxT, totalSIR*3.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
+plt.show()
+
+# <codecell>
+
+''' starting from equilibrium infected number '''
+# setting parameter
+timeUnit = 'day'
+if timeUnit == 'day':
+    day = 1
+    year = 365 
+elif timeUnit == 'year':
+    year = 1
+    day = float(1)/365 
+    
+totalSIR = float(1) # total population
+reprodNum = float(1.8) # basic reproductive number R0: one infected person will transmit to 1.8 person 
+recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
+inOutRate = float(1)/(30*year) # birth rate per year
+infecRate = reprodNum*(recovRate + inOutRate)/totalSIR # per year, per person, per total-population
+
+# initial boundary condition
+minT = float(0)
+maxT = float(1*year)
+totalGPoint_T = int(10**4 + 1)
+spacingT = np.linspace(minT, maxT, num = totalGPoint_T, retstep = True)
+gridT = spacingT[0]
+dt = spacingT[1]
+
+gridS = np.zeros(totalGPoint_T)
+gridI = np.zeros(totalGPoint_T)
+gridR = np.zeros(totalGPoint_T)
+
+# initial output condition (equlibrium state)
+gridS[0] = (recovRate + inOutRate)/infecRate
+gridI[0] = inOutRate*(totalSIR - gridS[0])/(infecRate*gridS[0])
+gridR[0] = totalSIR - gridS[0] - gridI[0]
+
+def dSdt(SIRT = [], *args):
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3]
+    dS_dt = -infecRate*S*I + inOutRate*totalSIR - inOutRate*S
+    return dS_dt
+def dIdt(SIRT = [], *args):
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3] 
+    dI_dt = +infecRate*S*I - recovRate*I - inOutRate*I
+    return dI_dt
+def dRdt(SIRT = [], *args):
+    S = SIRT[0]
+    I = SIRT[1]
+    R = SIRT[2]
+    T = SIRT[3]
+    dR_dt = recovRate*I - inOutRate*R
+    return dR_dt
+
+# Runge Kutta numerical solution
+pde_array = np.array([dSdt, dIdt, dRdt])
+startingOut_Value = np.array([gridS[0], gridI[0], gridR[0]])
+gridOut_array = AlvaRungeKutta4List(pde_array, startingOut_Value, minT, maxT, totalGPoint_T)
+    
+gridS = gridOut_array[0]  
+gridI = gridOut_array[1]
+gridR = gridOut_array[2]
+numberingFig = numberingFig + 1;
+plt.figure(numberingFig, figsize = AlvaFigSize)
+plt.plot(gridT, gridS, label = r'$ S(t) $')
+plt.plot(gridT, gridR, label = r'$ R(t) $')
+plt.plot(gridT, gridI, label = r'$ I(t) $')
+plt.plot(gridT, infecRate*gridS*gridI*day, label = r'$ \beta \ S(t)I(t) $', linestyle = 'dashed', color = 'red')
+plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
+plt.grid(True)
+plt.title(r'$ Prevalence \ and \ incidence \ of \ SIR \ (equilibrium \ state)$', fontsize = AlvaFontSize)
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize)
+plt.legend(loc = (1,0))
+plt.text(maxT, totalSIR*6.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
+plt.text(maxT, totalSIR*5.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
+plt.text(maxT, totalSIR*4.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
+plt.text(maxT, totalSIR*3.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
+plt.text(maxT/2, totalSIR*3.5/6, r'$ S_0 = %f $'%(gridS[0]), fontsize = AlvaFontSize)
+plt.text(maxT/2, totalSIR*2.0/6, r'$ R_0 = %f $'%(gridR[0]), fontsize = AlvaFontSize)
+plt.text(maxT/2, totalSIR*0.5/6, r'$ I_0 = %f $'%(gridI[0]), fontsize = AlvaFontSize)
+plt.show()
+
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize=(12,4))
+plt.axis('off')
+plt.title(r'$ Susceptible-Infectious-Recovered \ equation \ (equilibrium \ state) $',fontsize = AlvaFontSize)
+plt.text(0, 3.0/4,r'$ \frac{\partial S(t)}{\partial t} = \
+         -\beta S(t)I(t) +\mu N -\mu S(t) = 0 \Longrightarrow I(t) = \frac{\mu}{\beta S(t)} (N - S(t)) \
+         \Longrightarrow I_0 = \frac{\mu N}{\beta} (\frac{N}{S_0} - 1) $'
+         , fontsize = 1.2*AlvaFontSize)
+plt.text(0, 2.0/4,r'$ \frac{\partial I(t)}{\partial t} = \
+         +\beta S(t)I(t) - \gamma I(t) -\mu I(t) = 0 \Longrightarrow \beta S(t) - \gamma - \mu = 0 \
+         \Longrightarrow S_0 = \frac{\gamma + \mu}{\beta} $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 1.0/4, r'$ \frac{\partial R(t)}{\partial t} = \
+         +\gamma I(t) - \mu R(t) \Longrightarrow R_0 = \frac{\gamma}{\mu} I_0 $', fontsize = 1.2*AlvaFontSize)
+plt.text(0, 0.0/4,r'$ since \ \beta = \frac{\Re_0 (\gamma + \mu)}{N} \Longrightarrow S_0 = \frac{N}{\Re_0} \
+         \ and \ I_0 = \frac{\mu N}{\beta} (\Re_0 - 1) \
+         \ and \ R_0 = \frac{\gamma N}{\beta} (\Re_0 - 1)$', fontsize = 1.2*AlvaFontSize)
 plt.show()
 
 # <codecell>
