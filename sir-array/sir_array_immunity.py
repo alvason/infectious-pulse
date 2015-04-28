@@ -54,7 +54,8 @@ def dSdt_array(SIRxt = [], *args):
     dS_dt_array = np.zeros(x_totalPoint)
     # each dSdt with the same equation form
     for xn in range(x_totalPoint):
-        dS_dt_array[xn] = -infecRate*S[xn]*crossInfect(cross_radius, x_totalPoint, I, xn) + inOutRate*totalSIR - inOutRate*S[xn]
+        dS_dt_array[xn] = - infecRate*S[xn]*crossInfect(cross_radius, x_totalPoint, I, xn) \
+                          + inOutRate*totalSIR - inOutRate*S[xn]
     return(dS_dt_array)
 
 def dIdt_array(SIRxt = [], *args):
@@ -73,9 +74,9 @@ def dIdt_array(SIRxt = [], *args):
     leftX[0] =centerX[0]
     rightX[-1] = centerX[-1]
     for xn in range(x_totalPoint):
-        dI_dt_array[xn] = +infecRate*S[xn]*I[xn] - recovRate*I[xn] - inOutRate*I[xn] + mutatRate*(leftX[xn] 
-                                                                                                  - 2*centerX[xn] 
-                                                                                                  + rightX[xn])/(dx**2)                                                                                                                
+        dI_dt_array[xn] = + infecRate*S[xn]*I[xn] \
+                          - recovRate*I[xn] - inOutRate*I[xn] \
+                          + mutatRate*(leftX[xn] - 2*centerX[xn] + rightX[xn])/(dx**2)                                                                                             
     return(dI_dt_array)
 
 def dRdt_array(SIRxt = [], *args):
@@ -88,8 +89,9 @@ def dRdt_array(SIRxt = [], *args):
     dR_dt_array = np.zeros(x_totalPoint)
     # each dIdt with the same equation form
     for xn in range(x_totalPoint):
-        dR_dt_array[xn] = +recovRate*I[xn] - inOutRate*R[xn] + \
-        (-infecRate*S[xn]*I[xn] + infecRate*S[xn]*crossInfect(cross_radius, x_totalPoint, I, xn))
+        dR_dt_array[xn] = + recovRate*I[xn] - inOutRate*R[xn] \
+                          - infecRate*S[xn]*I[xn] \
+                          + infecRate*S[xn]*crossInfect(cross_radius, x_totalPoint, I, xn)
     return(dR_dt_array)
 
 def monodA(r, i):
@@ -128,7 +130,7 @@ cross_radius = float(5) # radius of cross-immunity (the distance of half-of-valu
 
 # time boundary and griding condition
 minT = float(0)*year
-maxT = float(40)*year
+maxT = float(20)*year
 totalGPoint_T = int(1*10**3 + 1)
 spacingT = np.linspace(minT, maxT, num = totalGPoint_T, retstep = True)
 gridT = spacingT[0]
@@ -136,8 +138,8 @@ dt = spacingT[1]
 
 # space boundary and griding condition
 minX = float(0)
-maxX = float(40)
-totalGPoint_X = int(maxX + 1)
+maxX = float(15)
+totalGPoint_X = int(maxX*1 + 1)
 gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
 gridX = gridingX[0]
 dx = gridingX[1]
@@ -166,8 +168,8 @@ numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.contourf(gridT, gridX, gridI, levels = np.arange(0, gridI_array[0, 0]*4, gridI_array[0, 0]/100))
 plt.title(r'$ Infectious \ pulse \ by \ mutation \ and \ cross-immunity $', fontsize = AlvaFontSize)
-plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
-plt.ylabel(r'$ discrete \ space \ (strain) $', fontsize = AlvaFontSize);
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ discrete \ space \ (strain) $', fontsize = AlvaFontSize)
 plt.colorbar()
 plt.text(maxT*4.0/3, maxX*5.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*4.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
@@ -180,26 +182,27 @@ plt.show()
 # <codecell>
 
 # plot by listing each strain 
-numberingFig = numberingFig + 1;
-for i in range(0, totalGPoint_X, int(totalGPoint_X/10)):
-    plt.figure(numberingFig, figsize = AlvaFigSize)
-    plt.plot(gridT, gridS[i], label = r'$ S_{%i}(t) $'%(i))
-    plt.plot(gridT, gridR[i], label = r'$ R_{%i}(t) $'%(i))
-    plt.plot(gridT, gridI[i], label = r'$ I_{%i}(t) $'%(i))
-    plt.plot(gridT, infecRate*gridS[i].T*gridI[i].T*day, label = r'$ \beta \ S_{%i}(t)I_{%i}(t) $'%(i, i)
-             , linestyle = 'dashed', color = 'red')
-    plt.plot(gridT, (gridS[i] + gridI[i] + gridR[i]).T, label = r'$ S_{%i}(t)+I_{%i}(t)+R_{%i}(t) $'%(i, i, i)
-             , color = 'black')
+numberingFig = numberingFig + 1
+for i in range(0, totalGPoint_X, int(totalGPoint_X/6)):
+    figure = plt.figure(numberingFig, figsize = (12, 3))
+    axis = figure.add_subplot(1, 1, 1)
+    axis.plot(gridT, gridS[i], label = r'$ S_{%i}(t) $'%(i), color = 'blue')
+    axis.plot(gridT, gridR[i], label = r'$ R_{%i}(t) $'%(i), color = 'green')
+    axis.plot(gridT, (gridS[i] + gridI[i] + gridR[i]).T, label = r'$ S_{%i}(t)+I_{%i}(t)+R_{%i}(t) $'%(i, i, i)
+             , color = 'black')    
+    axis.set_xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+    axis.set_ylabel(r'$ S \ , \ R $', fontsize = AlvaFontSize)
+    axis.set_ylim(0, totalSIR*1.1)
+    axis.legend(loc = (1.1, 0))
+    
+    axis2 = axis.twinx()
+    axis2.plot(gridT, gridI[i], label = r'$ I_{%i}(t) $'%(i), color = 'red')
+    axis2.set_ylabel(r'$ I $', fontsize = AlvaFontSize, color = 'red')
+    for tl in axis2.get_yticklabels(): tl.set_color('red')
+    axis2.legend(loc = (1.1, 0.5))
+    
     plt.grid(True)
-    plt.title(r'$ Prevalence \ and \ incidence \ of \ SIR $', fontsize = AlvaFontSize)
-    plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
-    plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
-    plt.text(maxT, totalSIR*7.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*6.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*5.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*4.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*3.0/6, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
-    plt.legend(loc = (1,0))
+    plt.title(r'$ SIR \ of \ strain-%i $'%(i), fontsize = AlvaFontSize)
     plt.show()
 
 # <codecell>
@@ -220,13 +223,13 @@ figure = plt.figure(numberingFig, figsize=(16, 7))
 
 figure1 = figure.add_subplot(1,2,1, projection='3d')
 figure1.view_init(30, -80)
-figure1.plot_wireframe(X, Y, Z, cstride = totalGPoint_T, rstride = int(dx))
+figure1.plot_wireframe(X, Y, Z, cstride = totalGPoint_T, rstride = int(dx), alpha = 0.6, color = 'red')
 plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
 plt.ylabel(r'$x \ (virus \ space)$', fontsize = AlvaFontSize)
 
 figure2 = figure.add_subplot(1,2,2, projection='3d')
 figure2.view_init(30, 10)
-figure2.plot_wireframe(X, Y, Z, cstride = totalGPoint_T/20, rstride = int(maxX))
+figure2.plot_wireframe(X, Y, Z, cstride = totalGPoint_T/20, rstride = int(maxX), alpha = 0.6)
 plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
 plt.ylabel(r'$x \ (virus \ space)$', fontsize = AlvaFontSize)
 
@@ -235,20 +238,37 @@ plt.show()
 
 # <codecell>
 
+# Normalization stacked graph
+gridI_N = np.copy(gridI)
+for xn in range(totalGPoint_X):
+    gridI_N[xn, :] = gridI_N[xn, :]/np.sum(gridI_N[xn, :]*dt)
 numberingFig = numberingFig + 1
-plt.figure(numberingFig, figsize = AlvaFigSize)
-plt.plot(gridT, gridS.T)
-plt.plot(gridT, gridR.T)
-plt.plot(gridT, gridI.T)
-plt.plot(gridT, (gridS + gridI + gridR).T, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
-plt.title(r'$ Many-strain \ SIR $', fontsize = AlvaFontSize)
+plt.figure(numberingFig, figsize = (14, 4))
+plt.stackplot(gridT, gridI_N, alpha = 0.3)
+plt.title(r'$ Normalization-stacked-graph \ of \ infectious \ pulse---Prevalence $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
-plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*6.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*5.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*4.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*3.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*2.0/6, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
+plt.ylabel(r'$ I(n,t) $', fontsize = AlvaFontSize)
+plt.show()
+
+# <codecell>
+
+# Proportion stacked graph
+gridI_P = np.copy(gridI)
+for tn in range(totalGPoint_T):
+    gridI_P[:, tn] = gridI_P[:, tn]/np.sum(gridI_P[:, tn])
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize = (14, 4))
+plt.stackplot(gridT, gridI_P, alpha = 0.3)
+plt.title(r'$ Proportion-stacked-graph \ of \ infectious \ pulse---Prevalence $', fontsize = AlvaFontSize)
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ I(n,t) $', fontsize = AlvaFontSize)
+plt.ylim(0, 1)
+plt.text(maxT*1.1, totalSIR*5.0/7, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*4.0/7, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*3.0/7, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*2.0/7, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*1.0/7, r'$ m = %f $'%(mutatRate*10**14), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*0.0/7, r'$ r = %f $'%(cross_radius), fontsize = AlvaFontSize)
 plt.show()
 
 # <codecell>
