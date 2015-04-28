@@ -130,7 +130,7 @@ cross_radius = float(5) # radius of cross-immunity (the distance of half-of-valu
 
 # time boundary and griding condition
 minT = float(0)*year
-maxT = float(20)*year
+maxT = float(35)*year
 totalGPoint_T = int(1*10**3 + 1)
 spacingT = np.linspace(minT, maxT, num = totalGPoint_T, retstep = True)
 gridT = spacingT[0]
@@ -138,7 +138,7 @@ dt = spacingT[1]
 
 # space boundary and griding condition
 minX = float(0)
-maxX = float(15)
+maxX = float(35)
 totalGPoint_X = int(maxX*1 + 1)
 gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
 gridX = gridingX[0]
@@ -183,7 +183,7 @@ plt.show()
 
 # plot by listing each strain 
 numberingFig = numberingFig + 1
-for i in range(0, totalGPoint_X, int(totalGPoint_X/6)):
+for i in range(0, totalGPoint_X, int(totalGPoint_X/10)):
     figure = plt.figure(numberingFig, figsize = (12, 3))
     axis = figure.add_subplot(1, 1, 1)
     axis.plot(gridT, gridS[i], label = r'$ S_{%i}(t) $'%(i), color = 'blue')
@@ -240,7 +240,7 @@ plt.show()
 
 # Normalization stacked graph
 gridI_N = np.copy(gridI)
-for xn in range(totalGPoint_X):
+for xn in range(totalGPoint_X - 4):
     gridI_N[xn, :] = gridI_N[xn, :]/np.sum(gridI_N[xn, :]*dt)
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize = (14, 4))
