@@ -166,8 +166,9 @@ plt.plot(gridT, infecRate*gridS*gridI*day, label = r'$ \beta \ S(t)I(t) $', line
 plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
 plt.grid(True)
 plt.title(r'$ Prevalence \ and \ incidence \ of \ SIR $', fontsize = AlvaFontSize)
-plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
-plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize)
+plt.ylim(0, totalSIR*1.1)
 plt.legend(loc = (1,0))
 plt.text(maxT, totalSIR*6.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
 plt.text(maxT, totalSIR*5.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
@@ -241,21 +242,29 @@ gridS = gridOut_array[0]
 gridI = gridOut_array[1]
 gridR = gridOut_array[2]
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = AlvaFigSize)
-plt.plot(gridT, gridS, label = r'$ S(t) $')
-plt.plot(gridT, gridR, label = r'$ R(t) $')
-plt.plot(gridT, gridI, label = r'$ I(t) $')
-plt.plot(gridT, infecRate*gridS*gridI*day, label = r'$ \beta \ S(t)I(t) $', linestyle = 'dashed', color = 'red')
-plt.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
+figure = plt.figure(numberingFig, figsize = AlvaFigSize)
+axis = figure.add_subplot(1, 1, 1)
+axis.plot(gridT, gridS, label = r'$ S(t) $')
+axis.plot(gridT, gridR, label = r'$ R(t) $')
+axis.plot(gridT, gridS + gridI + gridR, label = r'$ S(t)+I(t)+R(t) $', color = 'black')
+axis.set_xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+axis.set_ylabel(r'$ S \ , \ R $', fontsize = AlvaFontSize)
+axis.set_ylim(0, totalSIR*1.1)
+axis.text(maxT*1.1, totalSIR*6.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
+axis.text(maxT*1.1, totalSIR*5.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
+axis.text(maxT*1.1, totalSIR*4.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
+axis.text(maxT*1.1, totalSIR*3.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
+axis.legend(loc = (1.1, 0))
+
+axis2 = axis.twinx()
+axis2.plot(gridT, gridI, label = r'$ I(t) $', color = 'red')
+axis2.set_ylabel(r'$ I $', fontsize = AlvaFontSize, color = 'red')
+for tl in axis2.get_yticklabels(): tl.set_color('red')
+axis2.legend(loc = (1.1, 0.5))
+
+plt.legend(loc = (1.1, 0.3))
+plt.title(r'$ Revival \ and \ equilibrium \ of \ SIR $', fontsize = AlvaFontSize)
 plt.grid(True)
-plt.title(r'$ Prevalence \ and \ incidence \ of \ SIR $', fontsize = AlvaFontSize)
-plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
-plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
-plt.legend(loc = (1,0))
-plt.text(maxT, totalSIR*6.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*5.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*4.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
-plt.text(maxT, totalSIR*3.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
 plt.show()
 
 # <codecell>

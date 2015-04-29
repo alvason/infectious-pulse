@@ -91,11 +91,13 @@ def dRdt_array(SIRxt = [], *args):
 # setting parameter
 timeUnit = 'year'
 if timeUnit == 'day':
-    day = 1; year = 365; 
+    day = 1
+    year = 365 
 elif timeUnit == 'year':
-    year = 1; day = float(1)/365; 
+    year = 1
+    day = float(1)/365
     
-totalSIR = float(1); # total population
+totalSIR = float(1) # total population
 reprodNum = 1.8 # basic reproductive number R0: one infected person will transmit to 1.8 person 
 recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
 infecRate = reprodNum*recovRate/totalSIR # per year, per person, per total-population
@@ -112,7 +114,7 @@ dt = spacingT[1]
 
 # space boundary and griding condition
 minX = float(0); maxX = float(1);
-totalGPoint_X = int(10 + 1)
+totalGPoint_X = int(maxX*100 + 1)
 gridingX = np.linspace(minX, maxX, num = totalGPoint_X, retstep = True)
 gridX = gridingX[0]
 dx = gridingX[1]
@@ -121,10 +123,14 @@ gridS_array = np.zeros([totalGPoint_X, totalGPoint_T])
 gridI_array = np.zeros([totalGPoint_X, totalGPoint_T])
 gridR_array = np.zeros([totalGPoint_X, totalGPoint_T])
 
-# initial output condition
-gridI_array[0:1, 0] = float(1)/10**6
-gridR_array[0, 0] = float(0)
-gridS_array[:, 0] = totalSIR - gridI_array[:, 0] - gridR_array[:, 0]
+# initial output condition (only one virus in equilibrium condition)
+gridS_array[:, 0] = np.ones(totalGPoint_X)*totalSIR
+gridS_array[0, 0] = (recovRate + inOutRate)/infecRate
+gridI_array[0, 0] = inOutRate*(totalSIR - gridS_array[0, 0])/(infecRate*gridS_array[0, 0])
+gridR_array[0, 0] = totalSIR - gridS_array[0, 0] - gridI_array[0, 0]
+
+
+
 
 # Runge Kutta numerical solution
 pde_array = np.array([dSdt_array, dIdt_array, dRdt_array])
@@ -168,11 +174,55 @@ plt.show()
 
 # <codecell>
 
+# Normalization stacked graph
+gridI_N = np.copy(gridI)
+for xn in range(totalGPoint_X):
+    gridI_N[xn, :] = gridI_N[xn, :]/np.sum(gridI_N[xn, :]*dt)
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize = (14, 4))
+plt.stackplot(gridT, gridI_N, alpha = 0.3)
+plt.title(r'$ Normalization-stacked-graph \ of \ infectious \ pulse---Prevalence $', fontsize = AlvaFontSize)
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ I(n,t) $', fontsize = AlvaFontSize)
+plt.show()
+
+# Proportion stacked graph
+gridI_P = np.copy(gridI)
+for tn in range(totalGPoint_T):
+    gridI_P[:, tn] = gridI_P[:, tn]/np.sum(gridI_P[:, tn])
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize = (14, 4))
+plt.stackplot(gridT, gridI_P, alpha = 0.3)
+plt.title(r'$ Proportion-stacked-graph \ of \ infectious \ pulse---Prevalence $', fontsize = AlvaFontSize)
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ I(n,t) $', fontsize = AlvaFontSize)
+plt.ylim(0, 1)
+plt.text(maxT*1.1, totalSIR*5.0/7, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*4.0/7, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*3.0/7, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*2.0/7, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*1.0/7, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
+plt.show()
+
+# Normalization stacked graph of Incidence
+gridINC = np.zeros([totalGPoint_X, totalGPoint_T])
+for xn in range(totalGPoint_X):
+    gridINC[xn, :] = infecRate*gridS[xn, :]*gridI[xn, :]/np.sum(infecRate*gridS[xn, :]*gridI[xn, :]*dt)
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize = (14, 4))
+plt.stackplot(gridT, gridINC, alpha = 0.3)
+plt.title(r'$ Normalization-stacked-graph \ of \ infectious \ pulse---Incidence $', fontsize = AlvaFontSize)
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ \beta S(n,t)I(n,t) $', fontsize = AlvaFontSize)
+plt.show()
+
+# <codecell>
+
 
 # plot by listing each strain 
 numberingFig = numberingFig + 1;
-for i in range(totalGPoint_X):
-    plt.figure(numberingFig, figsize = AlvaFigSize)
+for i in range(0, totalGPoint_X, 10):
+    plt.figure(numberingFig, figsize = (12, 4))
     plt.plot(gridT, gridS[i], label = r'$ S_{%i}(t) $'%(i))
     plt.plot(gridT, gridR[i], label = r'$ R_{%i}(t) $'%(i))
     plt.plot(gridT, gridI[i], label = r'$ I_{%i}(t) $'%(i))
@@ -180,74 +230,12 @@ for i in range(totalGPoint_X):
              , linestyle = 'dashed', color = 'red')
     plt.plot(gridT, (gridS[i] + gridI[i] + gridR[i]).T, label = r'$ S_{%i}(t)+I_{%i}(t)+R_{%i}(t) $'%(i, i, i)
              , color = 'black')
+    
+    plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+    plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize)
     plt.grid(True)
-    plt.title(r'$ Prevalence \ and \ incidence \ of \ SIR $', fontsize = AlvaFontSize)
-    plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
-    plt.ylabel(r'$ Proportion \ of \ population $', fontsize = AlvaFontSize);
-    plt.text(maxT, totalSIR*7.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*6.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*5.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*4.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
-    plt.text(maxT, totalSIR*3.0/6, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
-    plt.legend(loc = (1,0))
+    plt.title(r'$ SIR \ of \ strain-%i $'%(i), fontsize = AlvaFontSize)
     plt.show()
-
-# <codecell>
-
-numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = AlvaFigSize)
-plt.pcolormesh(gridT, gridX, gridI)
-plt.title(r'$ Many-strain \ SIR $', fontsize = AlvaFontSize)
-plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize);
-plt.ylabel(r'$ Strain \ space $', fontsize = AlvaFontSize);
-plt.colorbar()
-plt.show()
-
-# <codecell>
-
-# 3D plotting
-# define GridXX function for making 2D-grid from 1D-grid
-def AlvaGridXX(gridX, totalGPoint_Y):
-    gridXX = gridX;
-    for n in range(totalGPoint_Y - 1):
-        gridXX = np.vstack((gridXX, gridX))
-    return gridXX
-# for 3D plotting
-X = AlvaGridXX(gridT, totalGPoint_X); 
-Y = AlvaGridXX(gridX, totalGPoint_T).T; 
-Z = gridI
-numberingFig = numberingFig + 1;
-figure = plt.figure(numberingFig, figsize=(9, 7));
-figure3D = Axes3D(figure)
-figure3D.view_init(30, -80)
-
-figure3D.plot_surface(X, Y, Z, alpha = 0.5)
-plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
-plt.ylabel(r'$x \ (space)$', fontsize = AlvaFontSize)
-plt.show()
-
-# <codecell>
-
-# 3D plotting
-# define GridXX function for making 2D-grid from 1D-grid
-def AlvaGridXX(gridX, totalGPoint_Y):
-    gridXX = gridX;
-    for n in range(totalGPoint_Y - 1):
-        gridXX = np.vstack((gridXX, gridX))
-    return gridXX
-# for 3D plotting
-X = AlvaGridXX(gridT, totalGPoint_X); 
-Y = AlvaGridXX(gridX, totalGPoint_T).T; 
-Z = gridI
-numberingFig = numberingFig + 1;
-figure = plt.figure(numberingFig, figsize=(9, 7));
-figure3D = Axes3D(figure)
-figure3D.view_init(30, -80)
-
-figure3D.plot_wireframe(X, Y, Z, cstride = 10000)
-plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
-plt.ylabel(r'$x \ (space)$', fontsize = AlvaFontSize)
-plt.show()
 
 # <codecell>
 

@@ -20,13 +20,13 @@ date:   03/23/2015
 import numpy as np
 import matplotlib.pyplot as plt
 
-AlvaFontSize = 23;
-AlvaFigSize = (16, 6);
-numberingFig = 0;
+AlvaFontSize = 23
+AlvaFigSize = (14, 6)
+numberingFig = 0
 
 # Runge-Kutta numerical algorithm 
-numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize=(12, 6))
+numberingFig = numberingFig + 1
+plt.figure(numberingFig, figsize = (12, 6))
 plt.axis('off')
 plt.title(r'$ the \ 4th-order \ Runge-Kutta \ algorithm (interpolating \ polynomial) $', fontsize = AlvaFontSize)
 plt.text(0, 5.0/6, r'$ \frac{\partial y}{\partial x} = f(y,x) $', fontsize = 1.2*AlvaFontSize)
@@ -96,7 +96,7 @@ plt.plot(gridX, gridY_A, label = r'$ Analytic \ Exact $')
 plt.plot(gridX, gridY_E, label = r'$ Euler $', marker = '^')
 plt.plot(gridX, gridY, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Effectiveness \ of \ Runge-Kutta-one \ (h = %f) $'%(dx)
+plt.title(r'$ Effectiveness \ of \ Runge-Kutta-one \ (h = %f, \ steps = %i) $'%(dx, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y $', fontsize = AlvaFontSize);
@@ -111,7 +111,7 @@ numberingFig = numberingFig + 1;
 plt.figure(numberingFig, figsize = (12, 4))
 plt.plot(gridX, gridY - gridY_A, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one \ (\O(h^5) = %f) $'%(dx**5)
+plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one \ (\O(h^5) = %f, \ steps = %i) $'%(dx**5, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y - y_{exact} $', fontsize = AlvaFontSize);
@@ -170,12 +170,12 @@ gridY = AlvaRungeKutta4One(dYdx, minX, maxX, totalGPoint_X, initialY)
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 6))
+plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridX, gridY_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
 plt.plot(gridX, gridY_E, label = r'$ Euler $', marker = '^')
 plt.plot(gridX, gridY, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Effectiveness \ of \ Runge-Kutta-4th-one \ (h = %f) $'%(dx)
+plt.title(r'$ Effectiveness \ of \ Runge-Kutta-4th-one \ (h = %f, \ steps = %i) $'%(dx, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y $', fontsize = AlvaFontSize);
@@ -187,10 +187,10 @@ plt.show();
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 4))
+plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridX, gridY - gridY_A, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one (\O(h^5) = %f) $'%(dx**5)
+plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-one \ (\O(h^5) = %f, \ steps = %i) $'%(dx**5, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y - y_{exact} $', fontsize = AlvaFontSize);
@@ -276,7 +276,7 @@ gridY = solutionZY[1]
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 6))
+plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridX, gridZ_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
 plt.plot(gridX, gridY_A, label = r'$ Analytic $', linewidth = 6.0, alpha = 0.3)
 plt.plot(gridX, gridZ_E, label = r'$ Euler $', marker = '^')
@@ -284,7 +284,7 @@ plt.plot(gridX, gridY_E, label = r'$ Euler $', marker = '^')
 plt.plot(gridX, gridZ, label = r'$ RungeKutta $', marker = 'o')
 plt.plot(gridX, gridY, label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Effectiveness \ of \ Runge-Kutta-4th-coupled \ (h = %f) $'%(dx)
+plt.title(r'$ Effectiveness \ of \ Runge-Kutta-4th-coupled \ (h = %f, \ steps = %i) $'%(dx, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y $', fontsize = AlvaFontSize);
@@ -299,11 +299,11 @@ plt.show()
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 4))
+plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridX, gridZ - gridZ_A, label = r'$ z(x) $', marker = '^')
 plt.plot(gridX, gridY - gridY_A, label = r'$ y(x) $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-coupled \ (\O(h^5) = %f) $'%(dx**5)
+plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-coupled \ (\O(h^5) = %f, \ steps = %i) $'%(dx**5, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y - y_{exact} $', fontsize = AlvaFontSize);
@@ -406,14 +406,14 @@ gridOut_array = AlvaRungeKutta4List(pde_array, startingOut_Value, minX, maxX, to
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 5))
+plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridX, gridZ_A, label = r'$ Analytic-Exact $', linewidth = 6.0, alpha = 0.3)
 plt.plot(gridX, gridY_A, label = r'$ Analytic-Exact $', linewidth = 6.0, alpha = 0.3)
 
 plt.plot(gridX, gridOut_array[0], label = r'$ RungeKutta $', marker = 'o')
 plt.plot(gridX, gridOut_array[1], label = r'$ RungeKutta $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Effectiveness \ of \ Runge-Kutta-4th-coupled \ (\O(h) = %f) $'%(dx)
+plt.title(r'$ Effectiveness \ of \ Runge-Kutta-4th-coupled \ (h = %f, \ steps = %i) $'%(dx, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y $', fontsize = AlvaFontSize);
@@ -428,16 +428,16 @@ plt.show()
 
 # plotting
 numberingFig = numberingFig + 1;
-plt.figure(numberingFig, figsize = (12, 4))
+plt.figure(numberingFig, figsize = AlvaFigSize)
 plt.plot(gridX, gridOut_array[0] - gridZ_A, label = r'$ z(x) $', marker = '^')
 plt.plot(gridX, gridOut_array[1] - gridY_A, label = r'$ y(x) $', marker = 'o')
 plt.grid(True)
-plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-coupled \ (\O(h^5) = %f) $'%(dx**5)
+plt.title(r'$ Local \ error \ of \ Runge-Kutta-4th-coupled \ (\O(h^5) = %f, \ steps = %i) $'%(dx**5, totalGPoint_X - 1)
           , fontsize = AlvaFontSize);
 plt.xlabel(r'$ x $', fontsize = AlvaFontSize);
 plt.ylabel(r'$ y - y_{exact} $', fontsize = AlvaFontSize);
 plt.legend(loc = (1, 0));
-plt.show();
+plt.show()
 
 # <codecell>
 
