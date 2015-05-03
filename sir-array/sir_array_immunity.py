@@ -133,7 +133,7 @@ cross_radius = float(5) # radius of cross-immunity (the distance of half-of-valu
 # time boundary and griding condition
 minT = float(0)*year
 maxT = float(51)*year
-totalPoint_T = int(1*10**3 + 1)
+totalPoint_T = int(1*10**4 + 1)
 spacingT = np.linspace(minT, maxT, num = totalPoint_T, retstep = True)
 gT = spacingT[0]
 dt = spacingT[1]
@@ -181,6 +181,7 @@ plt.text(maxT*4.0/3, maxX*4.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = Alva
 plt.text(maxT*4.0/3, maxX*3.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*2.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*1.0/6, r'$ m = %f $'%(mutatRate*10**14), fontsize = AlvaFontSize)
+plt.text(maxT*4.0/3, maxX*0.0/6, r'$ r = %f $'%(cross_radius), fontsize = AlvaFontSize)
 plt.colorbar(colorPlot)
 plt.xlim(minT, maxT - 1)
 plt.ylim(minX, maxX - 1)
@@ -199,7 +200,7 @@ plt.show()
 
 # Normalization stacked graph
 cutting_X = -1
-cutting_T = -25
+cutting_T = -250
 gI_N = np.copy(gI)
 for xn in range(totalPoint_X):
     gI_N[xn, :] = gI_N[xn, :]/np.sum(gI_N[xn, :]*dt)
@@ -216,7 +217,7 @@ gI_P = np.copy(gI)
 for tn in range(totalPoint_T):
     gI_P[:, tn] = gI_P[:, tn]/np.sum(gI_P[:, tn])
 numberingFig = numberingFig + 1
-plt.figure(numberingFig, figsize = (14, 4))
+plt.figure(numberingFig, figsize = (16, 4))
 plt.stackplot(gT[:cutting_T], gI_P[:cutting_X, :cutting_T], alpha = 0.3)
 plt.title(r'$ Proportion-stacked-graph \ of \ infectious \ pulse---Prevalence $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
@@ -226,7 +227,8 @@ plt.text(maxT*1.1, totalSIR*5.0/7, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaF
 plt.text(maxT*1.1, totalSIR*4.0/7, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
 plt.text(maxT*1.1, totalSIR*3.0/7, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
 plt.text(maxT*1.1, totalSIR*2.0/7, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
-plt.text(maxT*1.1, totalSIR*1.0/7, r'$ m = %f $'%(mutatRate), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*1.0/7, r'$ m = %f $'%(mutatRate*10**14), fontsize = AlvaFontSize)
+plt.text(maxT*1.1, totalSIR*0.0/7, r'$ r = %f $'%(cross_radius), fontsize = AlvaFontSize)
 plt.show()
 
 # Normalization stacked graph of Incidence
@@ -234,11 +236,12 @@ gInc = np.zeros([totalPoint_X, totalPoint_T])
 for xn in range(totalPoint_X):
     gInc[xn, :] = infecRate*gS[xn, :]*gI[xn, :]/np.sum(infecRate*gS[xn, :]*gI[xn, :]*dt)
 numberingFig = numberingFig + 1
-plt.figure(numberingFig, figsize = (14, 4))
+plt.figure(numberingFig, figsize = (16, 4))
 plt.stackplot(gT[:cutting_T], gInc[:cutting_X, :cutting_T], alpha = 0.3)
 plt.title(r'$ Normalization-stacked-graph \ of \ infectious \ pulse---Incidence $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
 plt.ylabel(r'$ \beta S(n,t)I(n,t) $', fontsize = AlvaFontSize)
+plt.text(maxT*1.1, -2, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
 plt.show()
 
 # <codecell>
@@ -283,16 +286,20 @@ numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize=(16, 7))
 
 plot1 = figure.add_subplot(1, 2, 1, projection = '3d')
-plot1.view_init(30, -80)
+plot1.view_init(30, -45)
 plot1.plot_wireframe(X, Y, Z, cstride = totalPoint_T, rstride = int(dx), alpha = 0.6, color = 'red')
 plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
 plt.ylabel(r'$x \ (virus \ space)$', fontsize = AlvaFontSize)
+plt.xlim(minT, maxT - 1)
+plt.ylim(minX, maxX - 1)
 
 plot2 = figure.add_subplot(1, 2, 2, projection = '3d')
-plot2.view_init(30, 10)
+plot2.view_init(30, -45)
 plot2.plot_wireframe(X, Y, Z, cstride = totalPoint_T/40, rstride = int(maxX), alpha = 0.6)
 plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
 plt.ylabel(r'$x \ (virus \ space)$', fontsize = AlvaFontSize)
+plt.xlim(minT, maxT - 1)
+plt.ylim(minX, maxX - 1)
 
 figure.tight_layout()
 plt.show()
