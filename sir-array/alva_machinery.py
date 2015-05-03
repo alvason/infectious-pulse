@@ -20,9 +20,9 @@ Home-made machinery for solving partial differential equations
 import numpy as np
 import matplotlib.pyplot as plt
 
-AlvaFontSize = 23;
-AlvaFigSize = (15, 3);
-numberingFig = 0;
+AlvaFontSize = 23
+AlvaFigSize = (15, 3)
+numberingFig = 0
 
 # define RK4 for an array (3, n) of coupled differential equations
 def AlvaRungeKutta4ArrayXT(pde_array, startingOut_Value, minX_In, maxX_In, totalGPoint_X, minT_In, maxT_In, totalGPoint_T):
