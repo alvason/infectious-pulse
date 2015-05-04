@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 import time
 
-import alva_machinery as alva
+import alva_machinery_event as alva
 
 AlvaFontSize = 23
 AlvaFigSize = (9, 7)
@@ -54,7 +54,7 @@ def dSdt_array(SIRxt = [], *args):
     # there are n dRdt
     dS_dt_array = np.zeros(x_totalPoint)
     # each dSdt with the same equation form
-    dS_dt_array[:] = - infecRate*S[:]*crossI_neighborSum_X(I, cross_radius, gX)[:] \
+    dS_dt_array[:] = - infecRate*S[:]*crossI_neighborSum_X(I, alva.eventName, gX)[:] \
                      + inOutRate*totalSIR - inOutRate*S[:]
     return(dS_dt_array)
 
@@ -89,14 +89,18 @@ def dRdt_array(SIRxt = [], *args):
     # each dIdt with the same equation form
     dR_dt_array[:] = + recovRate*I[:] - inOutRate*R[:] \
                      - infecRate*S[:]*I[:] \
-                     + infecRate*S[:]*crossI_neighborSum_X(I, cross_radius, gX)[:]
+                     + infecRate*S[:]*crossI_neighborSum_X(I, alva.eventName, gX)[:]
     return(dR_dt_array)
 
 # inverted-monod equation
 def monodInvert(half_radius, i):
-    gOut = 1 - np.absolute(i)/(half_radius + np.absolute(i))
     if half_radius == 0:
-        gOut[0] = 1
+        gOut = i*0
+        # numpy.reshape will not change the structure of i, 
+        # so that the first element of i(unkonwn-size-array) can be setted by array_to_list[0] 
+        array_to_list = np.reshape(i,[i.size,1]) 
+        array_to_list[0] = 1 
+    else: gOut = 1 - np.absolute(i)/(half_radius + np.absolute(i))
     return (gOut)
 
 # cross immunity
@@ -130,19 +134,19 @@ recovRate = float(1)/(4*day) # 4 days per period ==> rate/year = 365/4
 inOutRate = float(1)/(30*year) # birth rate per year
 infecRate = reprodNum*(recovRate + inOutRate)/totalSIR # per year, per person, per total-population
 mutatRate = float(1)/(10**17) # mutation rate
-cross_radius = float(5) # radius of cross-immunity (the distance of half-of-value in the Monod equation) 
+#cross_radius = float(1) # radius of cross-immunity (the distance of half-of-value in the Monod equation) 
 
 # time boundary and griding condition
 minT = float(0)*year
-maxT = float(51)*year
-totalPoint_T = int(1*10**4 + 1)
+maxT = float(16)*year
+totalPoint_T = int(2*10**3 + 1)
 spacingT = np.linspace(minT, maxT, num = totalPoint_T, retstep = True)
 gT = spacingT[0]
 dt = spacingT[1]
 
 # space boundary and griding condition
 minX = float(0)
-maxX = float(51)
+maxX = float(21)
 totalPoint_X = int(maxX*1 + 1)
 gridingX = np.linspace(minX, maxX, num = totalPoint_X, retstep = True)
 gX = gridingX[0]
@@ -154,15 +158,20 @@ gR_array = np.zeros([totalPoint_X, totalPoint_T])
 
 # initial output condition (only one virus in equilibrium condition)
 # for fast switching from one-virus equilibrium to many-virus equilibrium, invert-Monod distribution of S and R are applied 
-gI_array[0, 0] = inOutRate*totalSIR*(reprodNum - 1)/infecRate  # only one virus exists
-gR_array[:, 0] = recovRate*totalSIR*(reprodNum - 1)/infecRate * monodInvert
+#gI_array[0, 0] = inOutRate*totalSIR*(reprodNum - 1)/infecRate  # only one virus exists
+#gR_array[:, 0] = recovRate*totalSIR*(reprodNum - 1)/infecRate * monodInvert(cross_radius, gX)
+#gS_array[:, 0] = totalSIR - gI_array[:, 0] - gR_array[:, 0]
+
+gI_array[0, 0] = float(1)/10**6  # only one virus exists
+gR_array[0, 0] = float(0)
 gS_array[:, 0] = totalSIR - gI_array[:, 0] - gR_array[:, 0]
 
+event_tn_In = np.array([[0, 0], [3, 1]]) # cross_radius 
 # Runge Kutta numerical solution
 time_start = time.time()
 pde_array = np.array([dSdt_array, dIdt_array, dRdt_array])
-startingOut_Value = np.array([gS_array, gI_array, gR_array])
-gOut_array = alva.AlvaRungeKutta4ArrayXT(pde_array, startingOut_Value, minX, maxX, totalPoint_X, minT, maxT, totalPoint_T)
+initial_Out = np.array([gS_array, gI_array, gR_array])
+gOut_array = alva.AlvaRungeKutta4XT(pde_array, initial_Out, minX, maxX, totalPoint_X, minT, maxT, totalPoint_T, event_tn_In)
 time_stop = time.time()
 print ('machinery running time =', time_stop - time_start)
 # plotting
@@ -170,48 +179,40 @@ gS = gOut_array[0]
 gI = gOut_array[1]
 gR = gOut_array[2]
 
-numberingFig = numberingFig + 1;
-figure = plt.figure(numberingFig, figsize = (14, 7))
-plot1 = figure.add_subplot(1, 2, 2)
-#colorPlot = plot1.contourf(gT, gX, gI, levels = np.arange(0, 0.12, 0.001))
-colorPlot = plot1.pcolor(gT, gX, gI, vmin = 0, vmax = 0.001)
-plt.title(r'$ Infectious \ pulse \ I(x,t) \ by \ mutation $', fontsize = AlvaFontSize)
+numberingFig = numberingFig + 1
+maxLevel = gI_array[0, 0]*5000
+plt.figure(numberingFig, figsize = AlvaFigSize)
+plt.contourf(gT, gX, gI, levels = np.arange(0, maxLevel, maxLevel/100))
+plt.title(r'$ Infectious \ pulse \ by \ mutation \ and \ cross-immunity $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
 plt.ylabel(r'$ discrete \ space \ (strain) $', fontsize = AlvaFontSize)
+plt.colorbar()
 plt.text(maxT*4.0/3, maxX*5.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*4.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*3.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*2.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*1.0/6, r'$ m = %f $'%(mutatRate*10**14), fontsize = AlvaFontSize)
-plt.text(maxT*4.0/3, maxX*0.0/6, r'$ r = %f $'%(cross_radius), fontsize = AlvaFontSize)
-plt.colorbar(colorPlot)
-plt.xlim(minT, maxT - 1)
-plt.ylim(minX, maxX - 1)
-
-plot2 = figure.add_subplot(1, 2, 1)
-plot2.plot(gT, (gI.T + np.arange(totalPoint_X)*0.0001))
-plt.title(r'$ Infectious \ pulse \ I(x,t) \ by \ mutation  $', fontsize = AlvaFontSize)
-plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
-plt.ylabel(r'$ discrete \ space \ (strain) $', fontsize = AlvaFontSize)
-plt.xlim(minT, maxT - 1)
-
-figure.tight_layout()
+plt.text(maxT*4.0/3, maxX*0.0/6, r'$ r = %f, \ \ r = %f $'%(event_tn_In[0, 1], event_tn_In[1, 1]), fontsize = AlvaFontSize)
 plt.show()
 
 # <codecell>
 
 # Normalization stacked graph
 cutting_X = -1
-cutting_T = -250
+cutting_T = -1
 gI_N = np.copy(gI)
 for xn in range(totalPoint_X):
     gI_N[xn, :] = gI_N[xn, :]/np.sum(gI_N[xn, :]*dt)
 numberingFig = numberingFig + 1
-plt.figure(numberingFig, figsize = (14, 4))
+plt.figure(numberingFig, figsize = (16, 4))
 plt.stackplot(gT[:cutting_T], gI_N[:cutting_X, :cutting_T], alpha = 0.3)
 plt.title(r'$ Normalization-stacked-graph \ of \ infectious \ pulse---Prevalence $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
 plt.ylabel(r'$ I(n,t) $', fontsize = AlvaFontSize)
+plt.xlim(minT, maxT - 1)
+#plt.ylim(0, 4)
+plt.axes().set_xticks(np.arange(minT, maxT))
+plt.grid(True)
 plt.show()
 
 # Proportion stacked graph
@@ -224,13 +225,10 @@ plt.stackplot(gT[:cutting_T], gI_P[:cutting_X, :cutting_T], alpha = 0.3)
 plt.title(r'$ Proportion-stacked-graph \ of \ infectious \ pulse---Prevalence $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
 plt.ylabel(r'$ I(n,t) $', fontsize = AlvaFontSize)
+plt.xlim(minT, maxT - 1)
 plt.ylim(0, 1)
-plt.text(maxT*1.1, totalSIR*5.0/7, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
-plt.text(maxT*1.1, totalSIR*4.0/7, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
-plt.text(maxT*1.1, totalSIR*3.0/7, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
-plt.text(maxT*1.1, totalSIR*2.0/7, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
-plt.text(maxT*1.1, totalSIR*1.0/7, r'$ m = %f $'%(mutatRate*10**14), fontsize = AlvaFontSize)
-plt.text(maxT*1.1, totalSIR*0.0/7, r'$ r = %f $'%(cross_radius), fontsize = AlvaFontSize)
+plt.axes().set_xticks(np.arange(minT, maxT))
+plt.grid(True)
 plt.show()
 
 # Normalization stacked graph of Incidence
@@ -243,14 +241,17 @@ plt.stackplot(gT[:cutting_T], gInc[:cutting_X, :cutting_T], alpha = 0.3)
 plt.title(r'$ Normalization-stacked-graph \ of \ infectious \ pulse---Incidence $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
 plt.ylabel(r'$ \beta S(n,t)I(n,t) $', fontsize = AlvaFontSize)
-plt.text(maxT*1.1, -2, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
+plt.xlim(minT, maxT - 1)
+#plt.ylim(0, 4)
+plt.axes().set_xticks(np.arange(minT, maxT))
+plt.grid(True)
 plt.show()
 
 # <codecell>
 
 # plot by listing each strain 
 numberingFig = numberingFig + 1
-for i in range(0, totalPoint_X, 10):
+for i in range(0, totalPoint_X, 4):
     figure = plt.figure(numberingFig, figsize = (12, 3))
     plot1 = figure.add_subplot(1, 1, 1)
     plot1.plot(gT, gS[i], label = r'$ S_{%i}(t) $'%(i), color = 'blue')
@@ -288,39 +289,52 @@ numberingFig = numberingFig + 1
 figure = plt.figure(numberingFig, figsize=(16, 7))
 
 plot1 = figure.add_subplot(1, 2, 1, projection = '3d')
-plot1.view_init(30, -45)
+plot1.view_init(30, -80)
 plot1.plot_wireframe(X, Y, Z, cstride = totalPoint_T, rstride = int(dx), alpha = 0.6, color = 'red')
 plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
 plt.ylabel(r'$x \ (virus \ space)$', fontsize = AlvaFontSize)
-plt.xlim(minT, maxT - 1)
-plt.ylim(minX, maxX - 1)
+plt.xlim(minT, maxT)
+plt.ylim(minX, maxX)
 
 plot2 = figure.add_subplot(1, 2, 2, projection = '3d')
-plot2.view_init(30, -45)
+plot2.view_init(30, 10)
 plot2.plot_wireframe(X, Y, Z, cstride = totalPoint_T/40, rstride = int(maxX), alpha = 0.6)
 plt.xlabel(r'$t \ (time)$', fontsize = AlvaFontSize)
 plt.ylabel(r'$x \ (virus \ space)$', fontsize = AlvaFontSize)
-plt.xlim(minT, maxT - 1)
-plt.ylim(minX, maxX - 1)
+plt.xlim(minT, maxT)
+plt.ylim(minX, maxX)
 
 figure.tight_layout()
 plt.show()
 
 # <codecell>
 
-numberingFig = numberingFig + 1
-plt.figure(numberingFig, figsize = AlvaFigSize)
-plt.contourf(gT, gX, gI, levels = np.arange(0, gI_array[0, 0]*4, gI_array[0, 0]/100))
-plt.title(r'$ Infectious \ pulse \ by \ mutation \ and \ cross-immunity $', fontsize = AlvaFontSize)
+numberingFig = numberingFig + 1;
+figure = plt.figure(numberingFig, figsize = (14, 7))
+plot1 = figure.add_subplot(1, 2, 2)
+#colorPlot = plot1.contourf(gT, gX, gI, levels = np.arange(0, 0.12, 0.001))
+colorPlot = plot1.pcolor(gT, gX, gI, vmin = 0, vmax = 0.001)
+plt.title(r'$ Infectious \ pulse \ I(x,t) \ by \ mutation $', fontsize = AlvaFontSize)
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
 plt.ylabel(r'$ discrete \ space \ (strain) $', fontsize = AlvaFontSize)
-plt.colorbar()
 plt.text(maxT*4.0/3, maxX*5.0/6, r'$ R_0 = %f $'%(reprodNum), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*4.0/6, r'$ \gamma = %f $'%(recovRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*3.0/6, r'$ \beta = %f $'%(infecRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*2.0/6, r'$ \mu = %f $'%(inOutRate), fontsize = AlvaFontSize)
 plt.text(maxT*4.0/3, maxX*1.0/6, r'$ m = %f $'%(mutatRate*10**14), fontsize = AlvaFontSize)
-plt.text(maxT*4.0/3, maxX*0.0/6, r'$ r = %f $'%(cross_radius), fontsize = AlvaFontSize)
+plt.text(maxT*4.0/3, maxX*0.0/6, r'$ r = %i, \ \ r = %i $'%(event_tn_In[0, 1], event_tn_In[1, 1]), fontsize = AlvaFontSize)
+plt.colorbar(colorPlot)
+plt.xlim(minT, maxT)
+plt.ylim(minX, maxX)
+
+plot2 = figure.add_subplot(1, 2, 1)
+plot2.plot(gT, (gI.T + np.arange(totalPoint_X)*0.005))
+plt.title(r'$ Infectious \ pulse \ I(x,t) \ by \ mutation  $', fontsize = AlvaFontSize)
+plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
+plt.ylabel(r'$ discrete \ space \ (strain) $', fontsize = AlvaFontSize)
+plt.xlim(minT, maxT)
+
+figure.tight_layout()
 plt.show()
 
 # <codecell>
