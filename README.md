@@ -1,7 +1,7 @@
 # infectious-pulse
 ### [event of many-strain SIR model with mutation and immunity](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation_immunity_event.ipynb)
-![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-immunity-event-stacked.png)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-immunity-event.png)
+![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-immunity-event-stacked.png)
 ### [many-strain SIR model with mutation and immunity](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_immunity.ipynb)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-prevalence-incidence.png)
 ![alt tag](https://github.com/alvason/infectious-pulse/blob/master/sir-array/figure/infectious-pulse-mutation-immunity-discrete.png)
