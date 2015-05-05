@@ -1,0 +1,322 @@
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage{amssymb}
+
+
+\journal{Proceedings of the Royal Society B}
+
+%%%%%%%%%%%%%%% my adding usepackages
+%amsmath package provides an environment subequations
+\usepackage{amsmath}
+
+\usepackage{hyperref}
+
+\usepackage{graphicx}
+\usepackage{color} 
+
+%\usepackage{showframe}
+
+% comments
+\usepackage{ulem}
+\definecolor{purple}{rgb}{0.459,0.109,0.538}
+\def\tb#1#2{\sout{#1} \textcolor{purple}{#2}}
+\def\tbc#1{\textcolor{purple}{[#1]}}
+\definecolor{blue}{rgb}{0.324,0.609,0.708}
+\def\al#1#2{\sout{#1} \textcolor{blue}{#2}} 
+\def\alc#1{\textcolor{blue}{[#1]}} 
+
+\begin{document}
+
+\begin{frontmatter}
+
+%% Title, authors and addresses
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \address{Address\fnref{label3}}
+%% \fntext[label3]{}
+
+%Title of paper
+\title{Modeling the effects of vaccination on influenza transmission and evolution}
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{<author name>}
+%% \address[label1]{<address>}
+%% \address[label2]{<address>}
+
+\author{Alvason Zhenhua Li}
+\ead{alvali@fredhutch.org}
+
+\author{Trevor Bedford}
+\ead{tbedford@fredhutch.org}
+
+
+\address{Vaccine and Infectious Disease Division, Fred Hutchinson Cancer Research Center, Seattle, WA 98109, USA}
+
+
+\begin{abstract}
+Influenza viruses continually evolve to escape the human population immune response.
+New antigenic variants have a transmission advantage over older strains and so spread to take over the influenza virus population.
+Previous work has sought to model the join epidemiological and evolutionary process in which competition between strains plays out.
+By assuming a linear strain space, many of the basic dynamics of influenza transmission and evolution can captured.
+These models show a pattern of limited standing antigenic diversity, but rapid strain turnover coincident with observed dynamics.
+Here, we extend previous models to incorporate the effects of vaccination on influenza transmission and evolution.
+We examine varying vaccination coverage, vaccine strain choice and vaccination age cohort.
+We find that increasing vaccination coverage results in decreased disease incidence and slower rates of antigenic evolution.
+Interestingly, we find that vaccinating with antigenically leading strains, not matched to circulating viruses, results in better overall protection.
+We also find that the same vaccine coverage applied to infants, before first influenza infection, rather than equally across the population, results in slower virus evolution and better overall protection.
+\end{abstract}
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+Influenza\sep Vaccination\sep Immunity\sep Mutation
+\end{keyword}
+
+\end{frontmatter}
+
+%% main text
+\section{Introduction}
+Vaccination is one of the major medical advances in fighting various virus in recent centuries. 
+Currently, influenza vaccination is a powerful tool in the global-health control arsenal, and allows for the mass prevention of infection.
+Various elements of mathematics are used throughout the vaccine development process.
+In this paper, we focus on the use of mathematics in influenza virus drift, understanding the impact of vaccination at the many-strain antigenic evolution. 
+
+\section{Model}
+Mathematically, based on the many-strain SIR epidemiological model (Gog and Grenfell 2002), which specifies the dynamics of large number of antigenic types with cross-immunity interaction, and introduced the general vaccination strategy composing infants (a proportion \(\phi_{1}\) of all children are assumed to be immunized) and the random vaccination of individuals in the population (at rate \(\phi_{2}\), although this vaccination will only affect those that are currently susceptible).
+We are able to developed a many-strain SIRV epidemiological model as the following:
+
+\newpage
+In continuous one dimensional virus-space \(x\):
+\begin{align}
+  \label{eq:S}
+  \frac{\partial S(x,t)}{\partial t} = \mu N - \mu S(x,t) - \beta S(x,t) \int_{y} I(y,t)\sigma(y,x) dy
+ \nonumber\\
+  -(\phi_{1}\mu N + \phi_{2} S(x,t)) \xi(x-k, t-\tau, l) \int_{y} \sigma(y,k) dy
+\end{align}
+
+\begin{align}
+  \label{eq:I}
+  \frac{\partial I(x,t)}{\partial t} = \beta S(x,t) I(x,t) - \mu I(x,t) - \nu I(x,t) + m \frac{\partial^2I(x,t)}{\partial x^2}
+\end{align}
+
+\begin{align}
+  \label{eq:V}
+  \frac{\partial V(x,t)}{\partial t} = (\phi_{1}\mu N + \phi_{2} S(x,t)) \xi(x-k, t-\tau, l)  - \mu V(x,t) - \nu V(x,t)
+\end{align}
+
+\begin{align}
+  \label{eq:R}
+  \frac{\partial R(x,t)}{\partial t} = \nu (I(x,t) + V(x,t)) - \mu R(x,t) - \beta S(x,t) I(x,t) 
+   \nonumber\\
+   -(\phi_{1}\mu N + \phi_{2} S_i(x,t)) \xi(x-k, t-\tau, l)
+  \nonumber\\
+  +\beta S(x,t)\int_{y} I(y,t)\sigma(x,y) dy
+  \nonumber\\
+  +(\phi_{1}\mu N + \phi_{2} S_i(x,t)) \xi(x-k, t-\tau, l) \int_{y} \sigma(y,k) dy
+\end{align}
+
+Here, the cross-immunity kernel \(\sigma(y,x)\) is an inverse form of the Monod equation:
+\begin{equation}
+  \label{eq:Immunity}
+  \sigma(y-x) = 1 - \frac{\vert {\frac{y-x}{r}} \vert}{1 + \vert {\frac{y-x}{r}} \vert}
+\end{equation}
+in which the parameter \(r\) is the immunity (susceptibility) distance related with the strain space for \(50\%\) effectiveness. 
+
+Importantly, the vaccination selection function \(\xi(x-k, t-\tau, l)\) is composed of two functions: 
+\begin{equation}
+  \label{eq:Selection}
+  \xi(x-k, t-\tau, l) =  \delta(x-k) \omega(t-\tau, l)
+\end{equation}
+in which the unit impulse function (Kronecker delta function) \(\delta(x-k)\) is designed for selecting the specific vaccine \(k\) based on the recommending rules (lagging, coincident, and leading), and the window function (boxcar function) \(\omega(t-\tau, l)\) is the time window for implementing vaccination (starting from time \(\tau\) with duration \(l\)).
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\newpage
+In discretized one dimensional space of \(n\)-virus, above partial differential equations (1-4) become an array (\(4 \times n\)) of ordinary differential equations:
+\begin{align}
+  \label{eq:S}
+  \frac{\partial S_i(t)}{\partial t} = \mu N - \mu S_i(t) - \beta S_i(t) \sum_{j=1}^{n} I_j(t)\sigma(j,i)
+ \nonumber\\
+  -(\phi_{1}\mu N + \phi_{2} S_i(t)) \xi(i-k, t-\tau, l) \sum_{j=1}^{n} \sigma(j,k)
+\end{align}
+
+\begin{align}
+  \label{eq:I}
+  \frac{\partial I_i(t)}{\partial t} = \beta S_i(t) I_i(t) - \mu I_i(t) - \nu I_i(t) + m\frac{I_{i-1}(t) - 2I_{i}(t) + I_{i+1}(t)}{\Delta i^2}
+\end{align}
+
+\begin{align}
+  \label{eq:V}
+  \frac{\partial V_i(t)}{\partial t} = (\phi_{1}\mu N + \phi_{2} S_i(t)) \xi(i-k, t-\tau, l) - \mu V_i(t) - \nu V_i(t)
+\end{align}
+
+\begin{align}
+  \label{eq:R}
+  \frac{\partial R_i(t)}{\partial t} = \nu (I_i(t) + V_i(t)) - \mu R_i(t) - \beta S_i(t) I_i(t) 
+   \nonumber\\
+   -(\phi_{1}\mu N + \phi_{2} S_i(t)) \xi(i-k, t-\tau, l)
+   \nonumber\\
+  +\beta S_i(t)\sum_{j=1}^{n} I_j(t)\sigma(j,i)
+  \nonumber\\
+  +(\phi_{1}\mu N + \phi_{2} S_i(t)) \xi(i-k, t-\tau, l) \sum_{j=1}^{n} \sigma(j,k)
+\end{align}
+
+Here, the cross-immunity kernel \(\sigma(j,i)\) is an inverse form of the Monod equation:
+\begin{equation}
+  \label{eq:Immunity}
+  \sigma(j,i) = 1 - \frac{\vert {\frac{j-i}{r}} \vert}{1 + \vert {\frac{j-i}{r}} \vert}
+\end{equation}
+in which the parameter \(r\) is the immunity (susceptibility) distance related with the strain space for \(50\%\) effectiveness. 
+
+Importantly, the vaccination selection function \(\xi(i-k, t-\tau, l)\) is composed of two functions: 
+\begin{equation}
+  \label{eq:Selection}
+  \xi(x-k, t-\tau, l) =  \delta(i-k) \omega(t-\tau, l)
+\end{equation}
+in which the unit impulse function (Kronecker delta function) \(\delta(i-k)\) is designed for selecting the specific vaccine \(k\) based on the recommending rules (lagging, coincident, and leading), and the window function (boxcar function) \(\omega(t-\tau, l)\) is the time window for implementing vaccination (starting from time \(\tau\) with duration \(l\)).
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=4in]{figures/Diagram}
+  \caption{Schematic diagram of the many-stain SIRV model.
+  The solid straight arrows indicate the classic single-strain SIRV relationship.
+  The double-line arrows indicate the cross-immunity relationship with nearby strains.
+  The dashed double-arrows indicate the mutation to nearby strains. For simplification, both the birth and death rate \(\mu\) are ignored in this diagram.}
+\label{fig:Diagram}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=2in]{figures/Proportion}
+  \caption{Proportion stacked graph indicated the building up process of steady traveling wave of influenza drift.
+  Initial single-strain-equilibrium-state is propagating into many-strain-equilibrium-state.}
+\label{fig:Proportion}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=2in]{figures/SpeedRMC}
+  \caption{Drift speeds relate with 3 key parameters of the model, the blue circle points give the numerical results of model, while solid red line provide the suggestions of the linear conjecture from the model. (a) Speed as a function of basic reproductive number \(R_0\). (b) Speed as a function of mutation rate \(m\). (c) Speed as a function of cross-immunity distance \(r\).}
+  \label{fig:SpeedRMC}
+\end{figure}
+
+For linearize Equation{eq:I} by setting \(S = 1\):
+
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Results}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=4in]{figures/UnderVaccination}
+  \caption{Comparison of incidence rate between non-vaccination and under-vaccination.
+  (a) is a stain evolutionary map without vaccination (vaccination rate \(\phi\) = 0), in which a single-strain-equilibrium-state is evolving into many-strain-equilibrium-state in a half century time frame. 
+  (b) is the strain evolutionary map with 20 years continuous vaccination (from 30th year to 50th year). At the beginning 0th year, a single-strain-equilibrium-state is approaching into many-strain-equilibrium-state, however, starting from the 30th year, a continuous-mode vaccination strategy (vaccination rate \(\phi\) = 0.05 for susceptible population) is applied. 
+  After 20 years of vaccination pressure, the evolution is evolving and approaching into vaccination-equilibrium state.
+  (c)  is the strain evolutionary map with 20 years pulsed vaccination (from 30th year to 50th year). At the beginning 0th year, a single-strain-equilibrium-state is approaching into many-strain-equilibrium-state, however, starting from the 30th year, a pulsed-mode vaccination strategy (vaccination rate \(\phi\) = 0.05 for susceptible population) is applied. 
+  After 20 years of vaccination pressure, the evolution is evolving and approaching into vaccination-equilibrium state.}
+\label{fig:UnderVaccination}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Analysis}
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=2.5in]{figures/InfantVcon}
+  \caption{Effects of infant-vaccination on disease incidence and speed of antigenic drift. 
+  (a) Incidence or attack rate is measured as the average proportion of the population infected yearly.
+  (b) Antigenic drift rate is measured as the average difference between the mean antigenic phenotype at time \(t\) and the mean antigenic phenotype at time \(t+1\).
+  Vaccination rate \(\phi\) is measured in terms of the proportion of the population vaccinated yearly.
+ }
+  \label{fig:InfantVcon}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=2.5in]{figures/SusceptibleVcon}
+  \caption{Effects of continuous susceptible-vaccination on disease incidence and speed of antigenic drift. 
+  (a) Incidence or attack rate is measured as the average proportion of the population infected yearly.
+  (b) Antigenic drift rate is measured as the average difference between the mean antigenic phenotype at time \(t\) and the mean antigenic phenotype at time \(t+1\).
+  Vaccination rate \(\phi\) is measured in terms of the proportion of the population vaccinated yearly.
+ }
+  \label{fig:SusceptibleVcon}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=2.5in]{figures/SusceptibleVpulse}
+  \caption{Effects of pulsed susceptible-vaccination on disease incidence and speed of antigenic drift. 
+  (a) Incidence or attack rate is measured as the average proportion of the population infected yearly.
+  (b) Antigenic drift rate is measured as the average difference between the mean antigenic phenotype at time \(t\) and the mean antigenic phenotype at time \(t+1\).
+  Vaccination rate \(\phi\) is measured in terms of the proportion of the population vaccinated yearly.
+ }
+  \label{fig:SusceptibleVpulse}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in,height=4in]{figures/Compare3V}
+  \caption{Speed comparison among 3 vaccination strategies (continuous infant-vaccination and continuous susceptible-vaccination and pulsed susceptible vaccination condition). By converted the different vaccination rates (infant and susceptible) into the same scale active-vaccination (population.year) value, we are able to compare the vaccination-speed effect under different vaccination strategies}
+  \label{fig:Compare3V}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Conclusion}
+In conclusion, exact.
+
+%% The Appendices part is started with the command \appendix;
+%% appendix sections are then done as normal sections
+%% \appendix
+
+%% \section{}
+%% \label{}
+
+%% References
+%%
+%% Following citation commands can be used in the body text:
+%% Usage of \cite is as follows:
+%%   \cite{key}         ==>>  [#]
+%%   \cite[chap. 2]{key} ==>> [#, chap. 2]
+%%
+
+%% References with bibTeX database:
+
+\bibliographystyle{elsarticle-num} %with article and chapter titles,
+
+%\bibliographystyle{model1a-num-names} %without article and chapter titles
+
+
+% Create the reference section using BibTeX:
+\bibliography{ReferenceMorse}
+
+%% Authors are advised to submit their bibtex database files. They are
+%% requested to list a bibtex style file in the manuscript if they do
+%% not want to use elsarticle-num.bst.
+
+%% References without bibTeX database:
+
+% \begin{thebibliography}{00}
+
+%% \bibitem must have the following form:
+%%   \bibitem{key}...
+%%
+
+% \bibitem{}
+
+\end{document}
