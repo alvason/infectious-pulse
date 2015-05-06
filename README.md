@@ -1,18 +1,24 @@
-# infectious-pulse
-### [event of many-strain SIR model with mutation and immunity](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation_immunity_event.ipynb)
-![alt tag](sir-array/figure/infectious-pulse-mutation-immunity-event.png)
-![alt tag](sir-array/figure/infectious-pulse-mutation-immunity-event-stacked.png)
-### [many-strain SIR model with mutation and immunity](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_immunity.ipynb)
-![alt tag](sir-array/figure/infectious-pulse-prevalence-incidence.png)
-![alt tag](sir-array/figure/infectious-pulse-mutation-immunity-discrete.png)
+## Epidemiological models
+
+### [simple single strain SIR epidemiological model](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir/sir.ipynb)
+![](sir/figure/sir.png)
+![](sir/figure/revivalSIR.png)
+
 ### [many-strain SIR model with mutation](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation.ipynb)
-![alt tag](sir-array/figure/infectious-pulse-mutation-continuous.png)
-![alt tag](sir-array/figure/infectious-pulse-mutation-discrete.png)
-![alt tag](sir-array/figure/many-strain-SIR.png)
-### [one strain SIR epidemiological model](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir/sir.ipynb)
-![alt tag](sir/figure/sir.png)
-![alt tag](sir/figure/revivalSIR.png)
-#### [an estimation of the Runge-Kutta-4th numerical algorithm (fixed-step) for a list of coupled differential equations](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir/runge_kutta.ipynb)
-![alt tag](sir/figure/effectivenessRK4.png)
-![alt tag](sir/figure/errorRK4.png)
-### many-strain SIRV model
+![](sir-array/figure/infectious-pulse-mutation-continuous.png)
+![](sir-array/figure/infectious-pulse-mutation-discrete.png)
+![](sir-array/figure/many-strain-SIR.png)
+
+### [many-strain SIR model with mutation and immunity](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_mutation_immunity_event.ipynb)
+![](sir-array/figure/infectious-pulse-mutation-immunity-event.png)
+![](sir-array/figure/infectious-pulse-mutation-immunity-event-stacked.png)
+
+### [many-strain SIR model with mutation and immunity](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir-array/sir_array_immunity.ipynb)
+![](sir-array/figure/infectious-pulse-prevalence-incidence.png)
+![](sir-array/figure/infectious-pulse-mutation-immunity-discrete.png)
+
+## Numerical computation
+
+### [estimation of the Runge-Kutta-4th numerical algorithm (fixed-step) for a list of coupled differential equations](http://nbviewer.ipython.org/github/alvason/infectious-pulse/blob/master/sir/runge_kutta.ipynb)
+![](sir/figure/effectivenessRK4.png)
+![](sir/figure/errorRK4.png)
