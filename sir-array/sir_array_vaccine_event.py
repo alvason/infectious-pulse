@@ -6,7 +6,7 @@
 # # Infectious Pulse
 # https://github.com/alvason/infectious-pulse/
 # 
-# ### Many-strain SIR evolution --- its equilibrium state and infectious pulse due to mutation and cross-immunity
+# ### Many-strain SIR evolution --- vaccine events
 
 # <codecell>
 
@@ -24,23 +24,27 @@ import time
 import alva_machinery_event as alva
 
 AlvaFontSize = 23
-AlvaFigSize = (9, 7)
+AlvaFigSize = (12, 7)
 numberingFig = 0
 
 numberingFig = numberingFig + 1
 plt.figure(numberingFig, figsize=(12, 6))
 plt.axis('off')
-plt.title(r'$ n-strain \ SIR \ equations \ (mutation \ and \ cross-immunity) $',fontsize = AlvaFontSize)
-plt.text(0, 4.0/5,r'$ \frac{\partial S_i(t)}{\partial t} = \
+plt.title(r'$ n-strain \ SIRV \ equations \ (pulsed \ vaccination) $',fontsize = AlvaFontSize)
+plt.text(0, 6.0/8,r'$ \frac{\partial S_i(t)}{\partial t} = \
         + \mu N - \mu S_i(t) - \beta S_i(t)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|})I_{i}(t) $'
          , fontsize = 1.2*AlvaFontSize)
-plt.text(0, 2.0/5, r'$ \frac{\partial I_i(t)}{\partial t} = \
+plt.text(0, 4.0/8, r'$ \frac{\partial I_i(t)}{\partial t} = \
          + \beta S_i(t)I_i(t) - \gamma I_i(t) - \mu I_i(t) \
          + m \frac{I_{i - 1}(t) - 2I_i(t) + I_{i + 1}(t)}{(\Delta i)^2} $'
          , fontsize = 1.2*AlvaFontSize)
-plt.text(0, 0.0/5,r'$ \frac{\partial R_i(t)}{\partial t} = \
-         +\gamma I_i(t) - \mu R_i(t) - \beta S_i(t)I_i(t)\
-         + \beta S_i(t)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|})I_{i}(t) $'
+plt.text(0, 2.0/8, r'$ \frac{\partial V_i(t)}{\partial t} = \
+         + \phi S_i(t) \xi (i - k, t - \tau, l) - \gamma V_i(t) - \mu V_i(t) $'
+         , fontsize = 1.2*AlvaFontSize)
+plt.text(0, 0.0/8,r'$ \frac{\partial R_i(t)}{\partial t} = \
+         +\gamma I_i(t) - \mu R_i(t) - \beta S_i(t)I_i(t) \
+         + \beta S_i(t)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|})I_{i}(t) \
+         + \phi S_i(t) \xi (i - k, t - \tau, l)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|}) $'
          , fontsize = 1.2*AlvaFontSize)
 plt.show()
 
