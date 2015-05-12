@@ -225,7 +225,7 @@ plt.title(r'$ Proportion-stacked-graph \ of \ infectious \ pulse---Prevalence $'
 plt.xlabel(r'$time \ (%s)$'%(timeUnit), fontsize = AlvaFontSize)
 plt.ylabel(r'$ I(n,t) $', fontsize = AlvaFontSize)
 plt.xlim(minT, maxT - 1)
-#plt.ylim(0, 1)
+plt.ylim(0, 1)
 plt.axes().set_xticks(np.arange(minT, maxT))
 plt.grid(True)
 plt.show()

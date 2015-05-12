@@ -32,7 +32,8 @@ plt.figure(numberingFig, figsize=(12, 6))
 plt.axis('off')
 plt.title(r'$ n-strain \ SIRV \ equations \ (pulsed \ vaccination) $',fontsize = AlvaFontSize)
 plt.text(0, 6.0/8,r'$ \frac{\partial S_i(t)}{\partial t} = \
-        + \mu N - \mu S_i(t) - \beta S_i(t)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|})I_{i}(t) $'
+        + \mu N - \mu S_i(t) - \beta S_i(t)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|})I_{i}(t) \
+        - \phi S_i(t) \xi (i - k, t - \tau, l)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|}) $'
          , fontsize = 1.2*AlvaFontSize)
 plt.text(0, 4.0/8, r'$ \frac{\partial I_i(t)}{\partial t} = \
          + \beta S_i(t)I_i(t) - \gamma I_i(t) - \mu I_i(t) \
@@ -43,34 +44,35 @@ plt.text(0, 2.0/8, r'$ \frac{\partial V_i(t)}{\partial t} = \
          , fontsize = 1.2*AlvaFontSize)
 plt.text(0, 0.0/8,r'$ \frac{\partial R_i(t)}{\partial t} = \
          +\gamma I_i(t) - \mu R_i(t) - \beta S_i(t)I_i(t) \
+         + \phi S_i(t) \xi (i - k, t - \tau, l) \
          + \beta S_i(t)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|})I_{i}(t) \
          + \phi S_i(t) \xi (i - k, t - \tau, l)\sum_{j = 1}^{n} (1 - \frac{|j - i|}{r + |j - i|}) $'
          , fontsize = 1.2*AlvaFontSize)
 plt.show()
 
-# define many-strain S-I-R equation
-def dSdt_array(SIRxt = [], *args):
+# define many-strain S-i-v-R equation
+def dSdt_array(SivRxt = [], *args):
     # naming
-    S = SIRxt[0]
-    I = SIRxt[1]
-    R = SIRxt[2]
-    x_totalPoint = SIRxt.shape[1]
-    # there are n dRdt
+    S = SivRxt[0]
+    I = SivRxt[1]
+    V = SivRxt[2]
+    R = SivRxt[3]
+    x_totalPoint = SivRxt.shape[1]
+    # there are n dYdt
     dS_dt_array = np.zeros(x_totalPoint)
-    # each dSdt with the same equation form
+    # each dYdt with the same equation form
     dS_dt_array[:] = - infecRate*S[:]*crossI_neighborSum_X(I, cross_radius, gX)[:] \
                      + inOutRate*totalSIR - inOutRate*S[:]
     return(dS_dt_array)
 
-def dIdt_array(SIRxt = [], *args):
-    global mutatRate
-    mutatRate = alva.eventName
+def dIdt_array(SivRxt = [], *args):
     # naming
-    S = SIRxt[0]
-    I = SIRxt[1]
-    R = SIRxt[2]
-    x_totalPoint = SIRxt.shape[1]
-    # there are n dRdt
+    S = SivRxt[0]
+    I = SivRxt[1]
+    V = SivRxt[2]
+    R = SivRxt[3]
+    x_totalPoint = SivRxt.shape[1]
+    # there are n dYdt
     dI_dt_array = np.zeros(x_totalPoint)
     # each dIdt with the same equation form
     Icopy = np.copy(I)
@@ -84,13 +86,29 @@ def dIdt_array(SIRxt = [], *args):
                      + mutatRate*(leftX[:] - 2*centerX[:] + rightX[:])/(dx**2)                                                                                             
     return(dI_dt_array)
 
-def dRdt_array(SIRxt = [], *args):
+def dVdt_array(SivRxt = [], *args):
     # naming
-    S = SIRxt[0]
-    I = SIRxt[1]
-    R = SIRxt[2]
-    x_totalPoint = SIRxt.shape[1]
-    # there are n dRdt
+    S = SivRxt[0]
+    I = SivRxt[1]
+    V = SivRxt[2]
+    R = SivRxt[3]
+    x_totalPoint = SivRxt.shape[1]
+    # there are n dYdt
+    dV_dt_array = np.zeros(x_totalPoint)
+    # each dIdt with the same equation form
+    dV_dt_array[:] = + infecRate*S[:]*I[:] \
+                     - recovRate*I[:] - inOutRate*I[:] \
+                     + vacciRate*S[:]*vaccine_Selection()*crossI_neighborSum_X(1, cross_radius, gX)[:]
+    return(dI_dt_array)
+
+def dRdt_array(SivRxt = [], *args):
+    # naming
+    S = SivRxt[0]
+    I = SivRxt[1]
+    V = SivRxt[2]
+    R = SivRxt[3]
+    x_totalPoint = SivRxt.shape[1]
+    # there are n dYdt
     dR_dt_array = np.zeros(x_totalPoint)
     # each dIdt with the same equation form
     dR_dt_array[:] = + recovRate*I[:] - inOutRate*R[:] \
@@ -122,6 +140,12 @@ def crossI_neighborSum_X(gI, half_radius, gX):
     if half_radius == 0:
         I_neighborSum = np.copy(gI)
     return (I_neighborSum)
+
+# vaccine selection
+def selectionV(selection_rule, select_time, time_length):
+    selectVaccine = np.max(I[:, select_time]) + selection_rule
+    start
+    return (selectVaccine, t, lengthT)
 
 # <codecell>
 
