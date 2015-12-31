@@ -19,7 +19,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 dir_path = '/Users/al/Desktop/GitHub/infectious-pulse/figure'
-file_name = 'one-virus'
+file_name = 'sir'
 
 AlvaFontSize = 23
 AlvaFigSize = (16, 6)

@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 dir_path = '/Users/al/Desktop/GitHub/infectious-pulse/figure'
-file_name = 'many-virus-mutation'
+file_name = 'sir-array-mutation'
 
 import alva_machinery as alva
 
