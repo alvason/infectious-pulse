@@ -1,8 +1,8 @@
 ## Epidemiological models
 
 ### [one strain SIR epidemiological model](https://github.com/alvason/infectious-pulse/blob/master/code/sir.ipynb)
-![](figure/one-virus-sir.png)
-![](figure/one-virus-revival-equilibrium.png)
+![](figure/sir-sir.png)
+![](figure/sir-revival-equilibrium.png)
 
 ### [many-strain SIR model with mutation](https://github.com/alvason/infectious-pulse/blob/master/code/sir_array_mutation.ipynb)
 ![](figure/infectious-pulse-mutation-continuous.png)
